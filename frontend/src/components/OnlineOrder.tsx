@@ -1,10 +1,11 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Beef, Bird, Drumstick, Flame, Sandwich, CupSoda, Store, Truck, ShoppingCart, Check, History } from 'lucide-react';
-import type { MenuItem, OrderLineItem, SizeTier, Address, Order, Customer } from '@groundup/shared-types';
+import type { MenuItem, OrderLineItem, SizeTier, Address, Order, CustomerWithStats } from '@groundup/shared-types';
 import { MENU_TIERS } from '../data/menuTiers';
 import { createOnlineOrder } from '../api/online-orders';
-import { fetchCustomerOrders, fetchCustomers } from '../api/orders';
-import { fetchMenu } from '../api/menu';
+import { fetchCustomerOrders } from '../api/orders';
+import { useMenu } from '../hooks/useMenu';
+import { useCustomers } from '../hooks/useCustomers';
 import './OnlineOrder.css';
 
 const CATEGORY_META: Record<string, { label: string; icon: typeof Beef }> = {
@@ -21,10 +22,10 @@ const tiersByItemId = new Map(MENU_TIERS.map((t) => [t.menuItemId, t.tiers]));
 type Step = 'browse' | 'checkout' | 'confirmed';
 
 export default function OnlineOrder() {
-  const [menu, setMenu] = useState<MenuItem[]>([]);
-  const [customers, setCustomers] = useState<Customer[]>([]);
+  const { menu } = useMenu();
+  const { customers } = useCustomers();
   const [step, setStep] = useState<Step>('browse');
-  const [activeCategory, setActiveCategory] = useState<string>('');
+  const [activeCategory, setActiveCategory] = useState<string>(menu[0]?.category ?? '');
   const [cart, setCart] = useState<OrderLineItem[]>([]);
   const [pendingItem, setPendingItem] = useState<MenuItem | null>(null);
   const [selectedTier, setSelectedTier] = useState<SizeTier | null>(null);
@@ -32,18 +33,17 @@ export default function OnlineOrder() {
 
   const categories = useMemo(() => Array.from(new Set(menu.map((m) => m.category))), [menu]);
 
-  useEffect(() => {
-    fetchMenu().then((items) => {
-      setMenu(items);
-      const firstCategory = Array.from(new Set(items.map((m) => m.category)))[0];
-      if (firstCategory) setActiveCategory(firstCategory);
-    }).catch(console.error);
-    fetchCustomers().then(setCustomers).catch(console.error);
-  }, []);
+  // Set the initial active category once the menu has loaded, without
+  // needing a separate fetch effect — the shared hook handles fetching.
+  useMemo(() => {
+    if (menu.length > 0 && !activeCategory) {
+      setActiveCategory(menu[0].category);
+    }
+  }, [menu, activeCategory]);
 
   const [identified, setIdentified] = useState(false);
   const [emailInput, setEmailInput] = useState('');
-  const [matchedCustomer, setMatchedCustomer] = useState<Customer | null>(null);
+  const [matchedCustomer, setMatchedCustomer] = useState<CustomerWithStats | null>(null);
   const [showHistory, setShowHistory] = useState(false);
   const [historyOrders, setHistoryOrders] = useState<Order[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);

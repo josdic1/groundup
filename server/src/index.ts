@@ -179,7 +179,7 @@ app.get('/api/customers/insights', (req, res) => {
     .slice(0, 5);
 
   const needReconnect = withStats
-    .filter((c) => c.orderCount > 0 && (c.lastOrderAt === null || c.lastOrderAt < sixtyDaysAgo))
+    .filter((c) => c.lastOrderAt === null || c.lastOrderAt < sixtyDaysAgo)
     .sort((a, b) => (a.lastOrderAt ?? 0) - (b.lastOrderAt ?? 0))
     .slice(0, 5);
 
@@ -294,19 +294,60 @@ app.get('/api/stats', (req, res) => {
 
 // ----- Demo controls -----
 
+// Generates a handful of "active right now" orders, timed relative to
+// whenever this is called — so they always look genuinely fresh, never stale.
+function generateFreshLiveOrders(): Order[] {
+  const customersWithData = customers.slice(0, 8);
+  const sampleItems: OrderLineItem[] = [
+    { menuItemId: 'beef-brisket-first-cut', name: 'First Cut Beef Brisket', quantity: 3.2, unitPrice: 15.49, lineTotal: 49.57 },
+    { menuItemId: 'poultry-chicken-cutlets-family-pack', name: 'Chicken Cutlets (Family Pack)', quantity: 2.4, unitPrice: 7.99, lineTotal: 19.18 },
+    { menuItemId: 'beef-pepper-steak-fajita', name: 'Premium Pepper Steak (Fajita Strips)', quantity: 1.8, unitPrice: 13.99, lineTotal: 25.18 },
+    { menuItemId: 'deli-sweet-noodle-kugel-24oz', name: 'Sweet Noodle Kugel (24 oz)', quantity: 2, unitPrice: 10.99, lineTotal: 21.98 },
+    { menuItemId: 'lamb-shoulder-chops', name: "Tevya's Ranch Shoulder Lamb Chops", quantity: 1.3, unitPrice: 17.99, lineTotal: 23.39 },
+  ];
+
+  const specs: { status: Order['status']; claimedBy: string | null; minutesAgo: number }[] = [
+    { status: 'placed', claimedBy: null, minutesAgo: 2 },
+    { status: 'placed', claimedBy: null, minutesAgo: 8 },
+    { status: 'in_prep', claimedBy: 'Mike', minutesAgo: 12 },
+    { status: 'in_prep', claimedBy: 'Dani', minutesAgo: 18 },
+    { status: 'ready', claimedBy: 'Sam', minutesAgo: 25 },
+  ];
+
+  const now = Date.now();
+  return specs.map((spec, i) => {
+    const customer = Math.random() < 0.6 ? customersWithData[i % customersWithData.length] : null;
+    const items = [sampleItems[i % sampleItems.length]];
+    const total = Math.round(items.reduce((s, it) => s + it.lineTotal, 0) * 100) / 100;
+    return {
+      id: `live-${i + 1}`,
+      customerId: customer?.customerId ?? null,
+      customerName: customer ? `${customer.firstName} ${customer.lastName}` : 'Walk-in',
+      items,
+      total,
+      status: spec.status,
+      source: 'counter',
+      fulfillment: 'in_store',
+      claimedBy: spec.claimedBy,
+      createdAt: now - spec.minutesAgo * 60 * 1000,
+    };
+  });
+}
+
 // Wipes all orders entirely. Menu and customers stay as-is.
 app.post('/api/demo/empty', (req, res) => {
   orders = [];
   res.json({ ok: true, message: 'All orders cleared' });
 });
 
-// Restores the curated demo dataset — 51 orders across the past 30 days.
+// Restores the curated demo dataset — historical completed orders, plus a
+// handful of freshly-timed live orders so the stream never looks stale.
 app.post('/api/demo/seed', (req, res) => {
-  orders = [...HISTORICAL_ORDERS];
+  orders = [...HISTORICAL_ORDERS, ...generateFreshLiveOrders()];
   res.json({ ok: true, message: 'Demo data loaded' });
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
   console.log(`Starting empty. ${HISTORICAL_ORDERS.length} historical orders available via the Data menu.`);

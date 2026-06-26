@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Beef, Bird, Drumstick, Flame, Sandwich, CupSoda, History, Store, Truck } from 'lucide-react';
-import type { MenuItem, OrderLineItem, Customer, Order, FulfillmentType } from '@groundup/shared-types';
-import { createOrder, fetchCustomers, fetchCustomerOrders } from '../api/orders';
-import { fetchMenu } from '../api/menu';
+import type { MenuItem, OrderLineItem, Order, FulfillmentType, CustomerWithStats } from '@groundup/shared-types';
+import { createOrder, fetchCustomerOrders } from '../api/orders';
+import { useMenu } from '../hooks/useMenu';
+import { useCustomers } from '../hooks/useCustomers';
 import './CounterScreen.css';
 
 const CATEGORY_META: Record<string, { label: string; icon: typeof Beef }> = {
@@ -23,16 +24,16 @@ type Props = {
 };
 
 export default function CounterScreen({ onOrderSent, recalledOrder, onRecallConsumed }: Props) {
-  const [menu, setMenu] = useState<MenuItem[]>([]);
+  const { menu } = useMenu();
+  const { customers } = useCustomers();
   const [activeCategory, setActiveCategory] = useState<string>('');
   const [cart, setCart] = useState<OrderLineItem[]>([]);
   const [pendingItem, setPendingItem] = useState<MenuItem | null>(null);
   const [amountInput, setAmountInput] = useState('');
   const [sending, setSending] = useState(false);
 
-  const [customers, setCustomers] = useState<Customer[]>([]);
   const [nameInput, setNameInput] = useState('');
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerWithStats | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -45,24 +46,31 @@ export default function CounterScreen({ onOrderSent, recalledOrder, onRecallCons
   const categories = useMemo(() => Array.from(new Set(menu.map((m) => m.category))), [menu]);
 
   useEffect(() => {
-    fetchCustomers().then(setCustomers).catch(console.error);
-    fetchMenu().then((items) => {
-      setMenu(items);
-      const firstCategory = Array.from(new Set(items.map((m) => m.category)))[0];
-      if (firstCategory) setActiveCategory(firstCategory);
-    }).catch(console.error);
-  }, []);
+    if (menu.length > 0 && !activeCategory) {
+      setActiveCategory(menu[0].category);
+    }
+  }, [menu, activeCategory]);
 
-  // When an order is sent back from the stream, load it into the cart for editing
+  // When an order is sent back from the stream, load it into the cart for editing.
+  // Only consume the recall once customers have loaded, so we don't clear it
+  // before we've had a real chance to match the customer by ID.
   useEffect(() => {
     if (!recalledOrder) return;
+    if (recalledOrder.customerId && customers.length === 0) return;
+
     setCart(recalledOrder.items);
-    setNameInput(recalledOrder.customerName);
     setFulfillment(recalledOrder.fulfillment);
     setOrderNote(recalledOrder.notes ?? '');
     if (recalledOrder.customerId) {
       const match = customers.find((c) => c.customerId === recalledOrder.customerId);
-      if (match) setSelectedCustomer(match);
+      if (match) {
+        setSelectedCustomer(match);
+        setNameInput(`${match.firstName} ${match.lastName}`);
+      } else {
+        setNameInput(recalledOrder.customerName);
+      }
+    } else {
+      setNameInput(recalledOrder.customerName);
     }
     onRecallConsumed();
   }, [recalledOrder, customers, onRecallConsumed]);

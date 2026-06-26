@@ -1,6 +1,7 @@
 import type { CustomerWithStats, Customer, Order } from '@groundup/shared-types';
+import { STORE_CONFIG } from '../config';
 
-const BASE = 'http://localhost:3001/api';
+const BASE = STORE_CONFIG.apiBaseUrl;
 
 export async function fetchCustomersWithStats(): Promise<CustomerWithStats[]> {
   const res = await fetch(`${BASE}/customers`);

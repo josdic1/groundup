@@ -19,6 +19,7 @@ import {
   createCustomer,
   updateCustomer,
 } from '../api/customers';
+import { invalidateCustomersCache } from '../hooks/useCustomers';
 import CustomerEditModal from './CustomerEditModal';
 import CustomerInsightsModal from './CustomerInsightsModal';
 import './CustomersPage.css';
@@ -138,6 +139,7 @@ export default function CustomersPage() {
   const handleSaveEdit = async (data: Partial<CustomerWithStats>) => {
     if (!editTarget) return;
     await updateCustomer(editTarget.customerId, data);
+    invalidateCustomersCache();
     setEditTarget(null);
     load();
   };
@@ -152,6 +154,7 @@ export default function CustomersPage() {
       dietaryNotes: data.dietaryNotes ?? '',
       address: data.address ?? { street: '', city: '', state: 'NJ', zip: '' },
     });
+    invalidateCustomersCache();
     setShowAddModal(false);
     load();
   };
@@ -230,9 +233,9 @@ export default function CustomersPage() {
                     <span className="contact-phone">{c.phone}</span>
                   </td>
                   <td>{c.loyaltyPoints}</td>
-                  <td>{c.orderCount}</td>
-                  <td>${c.totalSpent.toFixed(2)}</td>
-                  <td className="hide-sm">{formatDate(c.lastOrderAt)}</td>
+                  <td>{c.orderCount ?? 0}</td>
+                  <td>${(c.totalSpent ?? 0).toFixed(2)}</td>
+                  <td className="hide-sm">{formatDate(c.lastOrderAt ?? null)}</td>
                   <td className="actions-cell">
                     <button
                       className="row-action-btn"

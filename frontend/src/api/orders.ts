@@ -1,6 +1,7 @@
 import type { Order, OrderLineItem, Customer, FulfillmentType } from '@groundup/shared-types';
+import { STORE_CONFIG } from '../config';
 
-const BASE = 'http://localhost:3001/api';
+const BASE = STORE_CONFIG.apiBaseUrl;
 
 export async function fetchOrders(): Promise<Order[]> {
   const res = await fetch(`${BASE}/orders`);
