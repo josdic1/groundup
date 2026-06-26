@@ -5,5 +5,11 @@
     "frontend",
     "server",
     "packages/*"
-  ]
+  ],
+  "scripts": {
+    "build:shared": "npm run build --workspace=@groundup/shared-types",
+    "build:server": "npm run build:shared && npm run build --workspace=server",
+    "start:server": "npm run start --workspace=server",
+    "build:frontend": "npm run build:shared && npm run build --workspace=frontend"
+  }
 }
