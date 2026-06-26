@@ -1,0 +1,236 @@
+import express from 'express';
+import cors from 'cors';
+import type { Order, OrderLineItem, OrderSource, FulfillmentType, Address } from '@groundup/shared-types';
+import { CUSTOMERS } from './data/customers.js';
+import { HISTORICAL_ORDERS } from './data/historicalOrders.js';
+import { MENU } from './data/menu.js';
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+let orders: Order[] = [];
+let orderCounter = 1001;
+
+const menuCategoryById = new Map(MENU.map((m) => [m.id, m.category]));
+
+// ----- Orders -----
+
+app.get('/api/orders', (req, res) => {
+  res.json(orders);
+});
+
+app.post('/api/orders', (req, res) => {
+  const { customerName, customerId, items, source, fulfillment, notes, deliveryAddress } = req.body as {
+    customerName: string;
+    customerId?: string | null;
+    items: OrderLineItem[];
+    source?: OrderSource;
+    fulfillment?: FulfillmentType;
+    notes?: string;
+    deliveryAddress?: Address;
+  };
+
+  if (!items || items.length === 0) {
+    return res.status(400).json({ error: 'Order must have at least one item' });
+  }
+
+  const total = Math.round(
+    items.reduce((sum, i) => sum + i.lineTotal, 0) * 100
+  ) / 100;
+
+  const newOrder: Order = {
+    id: `ord-${orderCounter++}`,
+    customerId: customerId ?? null,
+    customerName: customerName || 'Walk-in',
+    items,
+    total,
+    status: 'placed',
+    source: source ?? 'counter',
+    fulfillment: fulfillment ?? 'in_store',
+    claimedBy: null,
+    createdAt: Date.now(),
+    notes,
+    deliveryAddress,
+  };
+
+  orders = [newOrder, ...orders];
+  res.status(201).json(newOrder);
+});
+
+app.patch('/api/orders/:id', (req, res) => {
+  const { id } = req.params;
+  const { status, claimedBy } = req.body as {
+    status?: Order['status'];
+    claimedBy?: string;
+  };
+
+  const order = orders.find((o) => o.id === id);
+  if (!order) {
+    return res.status(404).json({ error: 'Order not found' });
+  }
+
+  if (status) order.status = status;
+  if (claimedBy !== undefined) order.claimedBy = claimedBy;
+
+  res.json(order);
+});
+
+app.delete('/api/orders/:id', (req, res) => {
+  const { id } = req.params;
+  const order = orders.find((o) => o.id === id);
+  if (!order) {
+    return res.status(404).json({ error: 'Order not found' });
+  }
+  if (order.status !== 'placed') {
+    return res.status(400).json({ error: 'Only unclaimed orders can be sent back to the register' });
+  }
+  orders = orders.filter((o) => o.id !== id);
+  res.json({ ok: true });
+});
+
+// ----- Menu -----
+
+app.get('/api/menu', (req, res) => {
+  res.json(MENU);
+});
+
+// ----- Customers -----
+
+app.get('/api/customers', (req, res) => {
+  res.json(CUSTOMERS);
+});
+
+app.get('/api/customers/:id/orders', (req, res) => {
+  const { id } = req.params;
+  const customerOrders = orders
+    .filter((o) => o.customerId === id)
+    .sort((a, b) => b.createdAt - a.createdAt);
+  res.json(customerOrders);
+});
+
+// ----- Stats / Dashboard -----
+
+app.get('/api/stats', (req, res) => {
+  const now = Date.now();
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
+
+  const revenueOrders = orders.filter((o) => o.status !== 'cancelled');
+  const last30Days = revenueOrders.filter((o) => o.createdAt >= thirtyDaysAgo);
+  const todayOrders = revenueOrders.filter((o) => o.createdAt >= startOfToday.getTime());
+
+  // At-a-glance
+  const todayRevenue = Math.round(todayOrders.reduce((s, o) => s + o.total, 0) * 100) / 100;
+  const todayOrderCount = todayOrders.length;
+  const avgTicket = todayOrderCount > 0 ? Math.round((todayRevenue / todayOrderCount) * 100) / 100 : 0;
+  const activeOrders = orders.filter((o) => o.status === 'placed' || o.status === 'in_prep' || o.status === 'ready').length;
+
+  // Top-selling items (last 30 days), by revenue and by quantity
+  const itemStats = new Map<string, { name: string; revenue: number; unitsSold: number }>();
+  for (const o of last30Days) {
+    for (const item of o.items) {
+      const existing = itemStats.get(item.menuItemId) ?? { name: item.name, revenue: 0, unitsSold: 0 };
+      existing.revenue += item.lineTotal;
+      existing.unitsSold += item.quantity;
+      itemStats.set(item.menuItemId, existing);
+    }
+  }
+  const topByRevenue = Array.from(itemStats.values())
+    .sort((a, b) => b.revenue - a.revenue)
+    .slice(0, 8)
+    .map((i) => ({ ...i, revenue: Math.round(i.revenue * 100) / 100 }));
+  const topByUnits = Array.from(itemStats.values())
+    .sort((a, b) => b.unitsSold - a.unitsSold)
+    .slice(0, 8)
+    .map((i) => ({ ...i, unitsSold: Math.round(i.unitsSold * 10) / 10 }));
+
+  // Revenue by day (last 30 days)
+  const revenueByDayMap = new Map<string, number>();
+  for (const o of last30Days) {
+    const day = new Date(o.createdAt).toISOString().slice(0, 10);
+    revenueByDayMap.set(day, (revenueByDayMap.get(day) ?? 0) + o.total);
+  }
+  const revenueByDay = Array.from(revenueByDayMap.entries())
+    .map(([date, revenue]) => ({ date, revenue: Math.round(revenue * 100) / 100 }))
+    .sort((a, b) => (a.date < b.date ? -1 : 1));
+
+  // Revenue by category (last 30 days)
+  const categoryMap = new Map<string, number>();
+  for (const o of last30Days) {
+    for (const item of o.items) {
+      const category = menuCategoryById.get(item.menuItemId) ?? 'Other';
+      categoryMap.set(category, (categoryMap.get(category) ?? 0) + item.lineTotal);
+    }
+  }
+  const revenueByCategory = Array.from(categoryMap.entries())
+    .map(([category, revenue]) => ({ category, revenue: Math.round(revenue * 100) / 100 }))
+    .sort((a, b) => b.revenue - a.revenue);
+
+  // Revenue by category, per day — for the category trend line chart.
+  // Only the top categories by total revenue are tracked individually to keep the chart readable.
+  const topCategoryNames = revenueByCategory.slice(0, 4).map((c) => c.category);
+  const categoryByDayMap = new Map<string, Record<string, number>>();
+  for (const o of last30Days) {
+    const day = new Date(o.createdAt).toISOString().slice(0, 10);
+    if (!categoryByDayMap.has(day)) categoryByDayMap.set(day, {});
+    const dayBucket = categoryByDayMap.get(day)!;
+    for (const item of o.items) {
+      const category = menuCategoryById.get(item.menuItemId) ?? 'Other';
+      if (!topCategoryNames.includes(category)) continue;
+      dayBucket[category] = (dayBucket[category] ?? 0) + item.lineTotal;
+    }
+  }
+  const categoryTrend = Array.from(categoryByDayMap.entries())
+    .map(([date, categories]) => {
+      const row: Record<string, number | string> = { date };
+      for (const cat of topCategoryNames) {
+        row[cat] = Math.round((categories[cat] ?? 0) * 100) / 100;
+      }
+      return row;
+    })
+    .sort((a, b) => ((a.date as string) < (b.date as string) ? -1 : 1));
+
+  // Busiest hours (last 30 days), 0-23
+  const hourCounts = new Array(24).fill(0);
+  for (const o of last30Days) {
+    const hour = new Date(o.createdAt).getHours();
+    hourCounts[hour]++;
+  }
+  const busiestHours = hourCounts.map((count, hour) => ({ hour, count }));
+
+  res.json({
+    todayRevenue,
+    todayOrderCount,
+    avgTicket,
+    activeOrders,
+    topByRevenue,
+    topByUnits,
+    revenueByDay,
+    revenueByCategory,
+    categoryTrend,
+    topCategoryNames,
+    busiestHours,
+  });
+});
+
+// ----- Demo controls -----
+
+// Wipes all orders entirely. Menu and customers stay as-is.
+app.post('/api/demo/empty', (req, res) => {
+  orders = [];
+  res.json({ ok: true, message: 'All orders cleared' });
+});
+
+// Restores the curated demo dataset — 51 orders across the past 30 days.
+app.post('/api/demo/seed', (req, res) => {
+  orders = [...HISTORICAL_ORDERS];
+  res.json({ ok: true, message: 'Demo data loaded' });
+});
+
+const PORT = 3001;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Starting empty. ${HISTORICAL_ORDERS.length} historical orders available via the Data menu.`);
+});

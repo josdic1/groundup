@@ -1,0 +1,121 @@
+.top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  padding: 0 20px;
+  background: var(--ink);
+  border-bottom: 2px solid var(--ink);
+  flex-shrink: 0;
+}
+
+.top-nav-brand {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--paper);
+}
+
+.top-nav-links {
+  display: flex;
+  gap: 4px;
+}
+
+.top-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: rgba(250, 246, 238, 0.6);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.top-nav-link:hover {
+  color: var(--paper);
+}
+
+.top-nav-link.active {
+  background: rgba(250, 246, 238, 0.12);
+  color: var(--paper);
+}
+
+.admin-dropdown-wrap {
+  position: relative;
+}
+
+.admin-trigger {
+  cursor: pointer;
+  background: transparent;
+  border: 1.5px solid rgba(250, 246, 238, 0.25);
+  color: rgba(250, 246, 238, 0.85);
+}
+
+.admin-trigger:hover {
+  border-color: var(--rare);
+  color: var(--paper);
+}
+
+.admin-dropdown-wrap .admin-trigger.active-open {
+  border-color: var(--rare);
+  background: rgba(162, 59, 46, 0.18);
+  color: var(--paper);
+}
+
+.admin-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--paper);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  min-width: 220px;
+  z-index: 60;
+}
+
+.admin-dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 11px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--paper);
+  border: none;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.admin-dropdown-item:hover {
+  background: var(--paper-dim);
+}
+
+.admin-dropdown-item:disabled {
+  opacity: 0.5;
+}
+
+.admin-trigger.attention-ping {
+  animation: admin-attention 1s ease-in-out 4;
+}
+
+@keyframes admin-attention {
+  0%, 100% {
+    border-color: rgba(250, 246, 238, 0.25);
+    box-shadow: none;
+  }
+  50% {
+    border-color: var(--rare);
+    box-shadow: 0 0 0 3px rgba(162, 59, 46, 0.25);
+  }
+}

@@ -1,0 +1,37 @@
+.mkb-app {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: var(--paper-dim, #f0e9da);
+}
+
+.mkb-counter-pane {
+  width: 42%;
+  min-width: 380px;
+  height: 100%;
+  border-right: 2px solid var(--ink, #1c1410);
+  background: var(--paper, #faf6ee);
+}
+
+.mkb-stream-pane {
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .mkb-app {
+    flex-direction: column;
+  }
+  .mkb-counter-pane {
+    width: 100%;
+    min-width: 0;
+    height: 55%;
+    border-right: none;
+    border-bottom: 2px solid var(--ink, #1c1410);
+  }
+  .mkb-stream-pane {
+    height: 45%;
+  }
+}

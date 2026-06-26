@@ -1,0 +1,9 @@
+{
+  "name": "groundup",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "server",
+    "packages/*"
+  ]
+}
