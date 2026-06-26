@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import type { Order, OrderLineItem, OrderSource, FulfillmentType, Address } from '@groundup/shared-types';
+import type { Order, OrderLineItem, OrderSource, FulfillmentType, Address, Customer } from '@groundup/shared-types';
 import { CUSTOMERS } from './data/customers.js';
 import { HISTORICAL_ORDERS } from './data/historicalOrders.js';
 import { MENU } from './data/menu.js';
@@ -11,8 +11,24 @@ app.use(express.json());
 
 let orders: Order[] = [];
 let orderCounter = 1001;
+let customers: Customer[] = [...CUSTOMERS];
+let customerCounter = customers.length + 1;
 
 const menuCategoryById = new Map(MENU.map((m) => [m.id, m.category]));
+
+function computeCustomerStats(customerId: string) {
+  const customerOrders = orders.filter(
+    (o) => o.customerId === customerId && o.status !== 'cancelled'
+  );
+  const totalSpent = Math.round(
+    customerOrders.reduce((sum, o) => sum + o.total, 0) * 100
+  ) / 100;
+  const orderCount = customerOrders.length;
+  const lastOrderAt = customerOrders.length > 0
+    ? Math.max(...customerOrders.map((o) => o.createdAt))
+    : null;
+  return { totalSpent, orderCount, lastOrderAt };
+}
 
 // ----- Orders -----
 
@@ -97,8 +113,13 @@ app.get('/api/menu', (req, res) => {
 
 // ----- Customers -----
 
+// Returns every customer with computed order stats merged in, for the table view.
 app.get('/api/customers', (req, res) => {
-  res.json(CUSTOMERS);
+  const enriched = customers.map((c) => ({
+    ...c,
+    ...computeCustomerStats(c.customerId),
+  }));
+  res.json(enriched);
 });
 
 app.get('/api/customers/:id/orders', (req, res) => {
@@ -107,6 +128,62 @@ app.get('/api/customers/:id/orders', (req, res) => {
     .filter((o) => o.customerId === id)
     .sort((a, b) => b.createdAt - a.createdAt);
   res.json(customerOrders);
+});
+
+app.post('/api/customers', (req, res) => {
+  const body = req.body as Omit<Customer, 'customerId'>;
+  if (!body.firstName || !body.lastName) {
+    return res.status(400).json({ error: 'First and last name are required' });
+  }
+  const newCustomer: Customer = {
+    customerId: `cust-new-${customerCounter++}`,
+    firstName: body.firstName,
+    lastName: body.lastName,
+    phone: body.phone ?? '',
+    email: body.email ?? '',
+    loyaltyPoints: body.loyaltyPoints ?? 0,
+    dietaryNotes: body.dietaryNotes ?? '',
+    address: body.address ?? { street: '', city: '', state: 'NJ', zip: '' },
+  };
+  customers = [newCustomer, ...customers];
+  res.status(201).json({ ...newCustomer, ...computeCustomerStats(newCustomer.customerId) });
+});
+
+app.patch('/api/customers/:id', (req, res) => {
+  const { id } = req.params;
+  const customer = customers.find((c) => c.customerId === id);
+  if (!customer) {
+    return res.status(404).json({ error: 'Customer not found' });
+  }
+  const body = req.body as Partial<Customer>;
+  Object.assign(customer, body, { customerId: customer.customerId });
+  res.json({ ...customer, ...computeCustomerStats(customer.customerId) });
+});
+
+// Key insights — most loyal, highest spend, customers who haven't ordered in a while.
+app.get('/api/customers/insights', (req, res) => {
+  const now = Date.now();
+  const sixtyDaysAgo = now - 60 * 24 * 60 * 60 * 1000;
+
+  const withStats = customers.map((c) => ({
+    ...c,
+    ...computeCustomerStats(c.customerId),
+  }));
+
+  const mostLoyal = [...withStats]
+    .sort((a, b) => b.loyaltyPoints - a.loyaltyPoints)
+    .slice(0, 5);
+
+  const highestSpend = [...withStats]
+    .sort((a, b) => b.totalSpent - a.totalSpent)
+    .slice(0, 5);
+
+  const needReconnect = withStats
+    .filter((c) => c.orderCount > 0 && (c.lastOrderAt === null || c.lastOrderAt < sixtyDaysAgo))
+    .sort((a, b) => (a.lastOrderAt ?? 0) - (b.lastOrderAt ?? 0))
+    .slice(0, 5);
+
+  res.json({ mostLoyal, highestSpend, needReconnect });
 });
 
 // ----- Stats / Dashboard -----

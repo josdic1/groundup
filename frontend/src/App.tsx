@@ -4,6 +4,7 @@ import TopNav from './components/TopNav';
 import MainPage from './components/MainPage';
 import OnlineOrder from './components/OnlineOrder';
 import Dashboard from './components/Dashboard';
+import CustomersPage from './components/CustomersPage';
 import Toast from './components/Toast';
 import './App.shell.css';
 
@@ -27,6 +28,7 @@ function App() {
             <Route path="/" element={<MainPage />} />
             <Route path="/online" element={<OnlineOrder />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/customers" element={<CustomersPage />} />
           </Routes>
         </div>
         {toastMessage && (

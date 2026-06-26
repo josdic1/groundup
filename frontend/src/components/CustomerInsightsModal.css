@@ -1,0 +1,122 @@
+.insights-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 20, 16, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 70;
+}
+
+.insights-modal {
+  background: var(--paper);
+  border-radius: 16px;
+  padding: 28px 32px 32px;
+  width: 720px;
+  max-width: 92vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+.insights-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.insights-modal-head h2 {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: 24px;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+.insights-loading {
+  padding: 40px;
+  text-align: center;
+  color: rgba(28, 20, 16, 0.5);
+  font-size: 13px;
+}
+
+.insights-panels {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.insights-panel {
+  background: var(--paper-dim);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+}
+
+.insights-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  color: var(--rare);
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1.5px solid var(--ink);
+}
+
+.insights-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.insights-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.insights-rank {
+  width: 14px;
+  flex-shrink: 0;
+  font-weight: 700;
+  color: rgba(28, 20, 16, 0.35);
+  font-size: 11px;
+}
+
+.insights-name {
+  flex: 1;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.insights-value {
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.insights-empty {
+  font-size: 12px;
+  font-style: italic;
+  color: rgba(28, 20, 16, 0.45);
+}
+
+@media (max-width: 640px) {
+  .insights-panels {
+    grid-template-columns: 1fr;
+  }
+}

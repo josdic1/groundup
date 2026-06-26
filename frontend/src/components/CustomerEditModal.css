@@ -1,0 +1,89 @@
+.edit-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 20, 16, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 70;
+}
+
+.edit-modal {
+  background: var(--paper);
+  border-radius: 14px;
+  padding: 24px 28px 28px;
+  width: 420px;
+  box-shadow: 0 12px 32px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.edit-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.edit-modal-head h2 {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: 20px;
+  margin: 0;
+}
+
+.edit-modal input {
+  width: 100%;
+  font-size: 14px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  outline: none;
+  font-family: var(--font-body);
+}
+
+.edit-modal input:focus {
+  border-color: var(--rare);
+}
+
+.edit-modal-row {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-modal-row input {
+  flex: 1;
+}
+
+.edit-modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.edit-modal-actions .btn-secondary,
+.edit-modal-actions .btn-primary {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.edit-modal-actions .btn-secondary {
+  border: 1.5px solid var(--ink);
+  background: transparent;
+}
+
+.edit-modal-actions .btn-primary {
+  border: none;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.edit-modal-actions .btn-primary:disabled {
+  background: var(--line);
+  color: rgba(28, 20, 16, 0.4);
+}

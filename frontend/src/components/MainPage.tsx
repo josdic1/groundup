@@ -1,13 +1,41 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import type { Order } from '@groundup/shared-types';
 import CounterScreen from './CounterScreen';
 import OrderStream from './OrderStream';
 import { deleteOrder } from '../api/orders';
 import '../App.layout.css';
 
+type StartOrderState = {
+  startOrderForCustomerId?: string;
+};
+
 export default function MainPage() {
   const [refreshSignal, setRefreshSignal] = useState(0);
   const [recalledOrder, setRecalledOrder] = useState<Order | null>(null);
+  const location = useLocation();
+
+  // If the user navigated here from "Start order" on the Customers page,
+  // pre-fill the cart's customer field via the same mechanism used for recalls.
+  useEffect(() => {
+    const state = location.state as StartOrderState | null;
+    const customerId = state?.startOrderForCustomerId;
+    if (customerId) {
+      setRecalledOrder({
+        id: '',
+        customerId,
+        customerName: '',
+        items: [],
+        total: 0,
+        status: 'placed',
+        source: 'counter',
+        fulfillment: 'in_store',
+        claimedBy: null,
+        createdAt: Date.now(),
+      });
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const handleRecall = async (order: Order) => {
     try {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutGrid, Globe, BarChart3, Settings, ChevronDown } from 'lucide-react';
+import { LayoutGrid, Globe, BarChart3, Users, Settings, ChevronDown } from 'lucide-react';
 import { STORE_CONFIG } from '../config';
 import { resetToEmpty, resetToDemoData } from '../api/demo';
 import './TopNav.css';
@@ -65,6 +65,13 @@ export default function TopNav() {
         >
           <BarChart3 size={15} strokeWidth={2} />
           Dashboard
+        </NavLink>
+        <NavLink
+          to="/customers"
+          className={({ isActive }) => `top-nav-link ${isActive ? 'active' : ''}`}
+        >
+          <Users size={15} strokeWidth={2} />
+          Customers
         </NavLink>
 
         <div className="admin-dropdown-wrap">
