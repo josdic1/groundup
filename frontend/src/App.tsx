@@ -5,7 +5,9 @@ import MainPage from './components/MainPage';
 import OnlineOrder from './components/OnlineOrder';
 import Dashboard from './components/Dashboard';
 import CustomersPage from './components/CustomersPage';
+import MenuPage from './components/MenuPage';
 import Toast from './components/Toast';
+import { MenuProvider } from './context/MenuProvider';
 import './App.shell.css';
 
 function App() {
@@ -21,20 +23,21 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="app-shell">
-        <TopNav />
-        <div className="app-shell-body">
-          <Routes>
-            <Route path="/" element={<MainPage />} />
-            <Route path="/online" element={<OnlineOrder />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/customers" element={<CustomersPage />} />
-          </Routes>
+      <MenuProvider>
+        <div className="app-shell">
+          <TopNav />
+          <div className="app-shell-body">
+            <Routes>
+              <Route path="/" element={<MainPage />} />
+              <Route path="/online" element={<OnlineOrder />} />
+              <Route path="/menu" element={<MenuPage />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/customers" element={<CustomersPage />} />
+            </Routes>
+          </div>
+          {toastMessage && <Toast message={toastMessage} onDismiss={() => setToastMessage(null)} />}
         </div>
-        {toastMessage && (
-          <Toast message={toastMessage} onDismiss={() => setToastMessage(null)} />
-        )}
-      </div>
+      </MenuProvider>
     </BrowserRouter>
   );
 }

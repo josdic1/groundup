@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import type { Order, OrderLineItem, OrderSource, FulfillmentType, Address, Customer } from '@groundup/shared-types';
+import type { Order, OrderLineItem, OrderSource, FulfillmentType, Address, Customer, MenuItem } from '@groundup/shared-types';
 import { CUSTOMERS } from './data/customers.js';
 import { HISTORICAL_ORDERS } from './data/historicalOrders.js';
 import { MENU } from './data/menu.js';
@@ -13,6 +13,7 @@ let orders: Order[] = [];
 let orderCounter = 1001;
 let customers: Customer[] = [...CUSTOMERS];
 let customerCounter = customers.length + 1;
+let menu: MenuItem[] = [...MENU];
 
 const menuCategoryById = new Map(MENU.map((m) => [m.id, m.category]));
 
@@ -108,7 +109,47 @@ app.delete('/api/orders/:id', (req, res) => {
 // ----- Menu -----
 
 app.get('/api/menu', (req, res) => {
-  res.json(MENU);
+  res.json(menu.filter((item) => item.isActive));
+});
+
+app.get('/api/menu/admin', (req, res) => {
+  res.json(menu);
+});
+
+app.patch('/api/menu/:id', (req, res) => {
+  const { id } = req.params;
+  const item = menu.find((m) => m.id === id);
+  if (!item) return res.status(404).json({ error: 'Menu item not found' });
+
+  Object.assign(item, req.body, { id: item.id });
+  res.json(item);
+});
+
+app.post('/api/menu', (req, res) => {
+  const body = req.body as Partial<MenuItem>;
+
+  if (!body.name || !body.category || body.price === undefined || !body.unit || !body.soldBy) {
+    return res.status(400).json({ error: 'Missing required menu fields' });
+  }
+
+  const id = body.id || body.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+  if (menu.some((m) => m.id === id)) {
+    return res.status(400).json({ error: 'Menu item already exists' });
+  }
+
+  const item: MenuItem = {
+    id,
+    name: body.name,
+    category: body.category,
+    price: Number(body.price),
+    unit: body.unit,
+    soldBy: body.soldBy,
+    isActive: body.isActive ?? true,
+  };
+
+  menu = [item, ...menu];
+  res.status(201).json(item);
 });
 
 // ----- Customers -----
