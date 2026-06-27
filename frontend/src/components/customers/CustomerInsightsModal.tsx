@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Crown, TrendingUp, UserMinus } from 'lucide-react';
-import { fetchCustomerInsights, type CustomerInsights } from '../api/customers';
+import { fetchCustomerInsights, type CustomerInsights } from '../../api/customers';
 import './CustomerInsightsModal.css';
 
 type Props = {
