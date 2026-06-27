@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import TopNav from './components/TopNav';
-import MainPage from './components/MainPage';
-import OnlineOrder from './components/OnlineOrder';
-import Dashboard from './components/Dashboard';
-import CustomersPage from './components/CustomersPage';
-import MenuPage from './components/MenuPage';
-import Toast from './components/Toast';
-import { MenuProvider } from './context/MenuProvider';
+import TopNav from '../components/nav/TopNav';
+import MainPage from '../pages/CounterPage';
+import OnlineOrder from '../pages/OnlineOrderPage';
+import Dashboard from '../pages/DashboardPage';
+import CustomersPage from '../pages/CustomersPage';
+import MenuPage from '../pages/MenuPage';
+import Toast from '../components/ui/Toast';
+import { MenuProvider } from '../providers/MenuProvider';
 import './App.shell.css';
 
 function App() {

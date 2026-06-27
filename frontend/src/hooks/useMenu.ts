@@ -1,4 +1,4 @@
-import { useMenuContext } from '../context/MenuProvider';
+import { useMenuContext } from '../providers/MenuProvider';
 
 export function useMenu() {
   const { activeMenu, loading } = useMenuContext();

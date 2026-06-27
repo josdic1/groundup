@@ -20,8 +20,8 @@ import {
   updateCustomer,
 } from '../api/customers';
 import { invalidateCustomersCache } from '../hooks/useCustomers';
-import CustomerEditModal from './CustomerEditModal';
-import CustomerInsightsModal from './CustomerInsightsModal';
+import CustomerEditModal from '../components/customers/CustomerEditModal';
+import CustomerInsightsModal from '../components/customers/CustomerInsightsModal';
 import './CustomersPage.css';
 
 type SortKey = 'name' | 'loyaltyPoints' | 'totalSpent' | 'orderCount' | 'lastOrderAt';

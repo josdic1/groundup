@@ -13,7 +13,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { fetchStats, type Stats } from '../api/stats';
-import './Dashboard.css';
+import './DashboardPage.css';
 
 const SHORT_CATEGORY: Record<string, string> = {
   'Glatt Kosher Beef (Fresh Cuts)': 'Beef',

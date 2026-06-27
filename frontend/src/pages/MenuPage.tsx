@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { MenuItem, SoldBy } from '@groundup/shared-types';
-import { useMenuContext } from '../context/MenuProvider';
+import { useMenuContext } from '../providers/MenuProvider';
 import './MenuPage.css';
 
 const blankItem = {

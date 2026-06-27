@@ -6,7 +6,7 @@ import { createOnlineOrder } from '../api/online-orders';
 import { fetchCustomerOrders } from '../api/orders';
 import { useMenu } from '../hooks/useMenu';
 import { useCustomers } from '../hooks/useCustomers';
-import './OnlineOrder.css';
+import './OnlineOrderPage.css';
 
 const CATEGORY_META: Record<string, { label: string; icon: typeof Beef }> = {
   'Glatt Kosher Beef (Fresh Cuts)': { label: 'Beef', icon: Beef },
