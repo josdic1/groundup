@@ -99,7 +99,16 @@ export default function TopNav() {
 
           {adminOpen && (
             <div className="admin-dropdown" role="menu">
-              <button
+                            <button
+                type="button"
+                onClick={() => {
+                  window.dispatchEvent(new Event('groundup:start-tutorial'));
+                }}
+              >
+                Start walkthrough
+              </button>
+
+<button
                 className="admin-dropdown-item"
                 type="button"
                 disabled={working}

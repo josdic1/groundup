@@ -317,6 +317,20 @@ export default function TutorialToast() {
     setTourOpen(false);
   };
 
+  useEffect(() => {
+    const handleStartTutorial = () => {
+      setVisible(false);
+      setTourOpen(true);
+      goToTourStep(0);
+    };
+
+    window.addEventListener('groundup:start-tutorial', handleStartTutorial);
+
+    return () => {
+      window.removeEventListener('groundup:start-tutorial', handleStartTutorial);
+    };
+  });
+
   const current = TOUR_STEPS[step];
   const CurrentIcon = current.icon;
   const isLastStep = step === TOUR_STEPS.length - 1;
