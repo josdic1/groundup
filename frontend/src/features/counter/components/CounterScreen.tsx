@@ -254,9 +254,8 @@ export default function CounterScreen({
       {pendingItem && (
         <div
           className="amount-modal-backdrop"
-          onClick={() => setPendingItem(null)}
         >
-          <div className="amount-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="amount-modal">
             <h2>{pendingItem.name}</h2>
             <p className="amount-modal-price">
               ${pendingItem.price.toFixed(2)} {pendingItem.unit}
