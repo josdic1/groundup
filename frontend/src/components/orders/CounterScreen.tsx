@@ -1,18 +1,40 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Beef, Bird, Drumstick, Flame, Sandwich, CupSoda, History, Store, Truck } from 'lucide-react';
-import type { MenuItem, OrderLineItem, Order, FulfillmentType, CustomerWithStats } from '@groundup/shared-types';
-import { createOrder, fetchCustomerOrders } from '../../api/orders';
-import { useMenu } from '../../hooks/useMenu';
-import { useCustomers } from '../../hooks/useCustomers';
-import './CounterScreen.css';
+import { useState, useEffect, useMemo } from "react";
+import {
+  Beef,
+  Bird,
+  Drumstick,
+  Flame,
+  Sandwich,
+  CupSoda,
+  History,
+  Store,
+  Truck,
+} from "lucide-react";
+import type {
+  MenuItem,
+  OrderLineItem,
+  Order,
+  FulfillmentType,
+  CustomerWithStats,
+} from "@groundup/shared-types";
+import { createOrder, fetchCustomerOrders } from "../../api/orders";
+import { useMenu } from "../../hooks/useMenu";
+import { useCustomers } from "../../hooks/useCustomers";
+import "./CounterScreen.css";
 
 const CATEGORY_META: Record<string, { label: string; icon: typeof Beef }> = {
-  'Glatt Kosher Beef (Fresh Cuts)': { label: 'Beef', icon: Beef },
-  'Fresh Poultry (Chicken & Turkey)': { label: 'Poultry', icon: Bird },
-  'Premium Lamb & Veal': { label: 'Lamb & Veal', icon: Drumstick },
-  "Marinated & Oven-Ready Specials (Butcher's Prep)": { label: 'Prepared', icon: Flame },
-  'Prepared Deli, Provisions & Shabbos Takeout': { label: 'Deli', icon: Sandwich },
-  Beverages: { label: 'Drinks', icon: CupSoda },
+  "Glatt Kosher Beef (Fresh Cuts)": { label: "Beef", icon: Beef },
+  "Fresh Poultry (Chicken & Turkey)": { label: "Poultry", icon: Bird },
+  "Premium Lamb & Veal": { label: "Lamb & Veal", icon: Drumstick },
+  "Marinated & Oven-Ready Specials (Butcher's Prep)": {
+    label: "Prepared",
+    icon: Flame,
+  },
+  "Prepared Deli, Provisions & Shabbos Takeout": {
+    label: "Deli",
+    icon: Sandwich,
+  },
+  Beverages: { label: "Drinks", icon: CupSoda },
 };
 
 let walkInCounter = 1;
@@ -23,27 +45,35 @@ type Props = {
   onRecallConsumed: () => void;
 };
 
-export default function CounterScreen({ onOrderSent, recalledOrder, onRecallConsumed }: Props) {
+export default function CounterScreen({
+  onOrderSent,
+  recalledOrder,
+  onRecallConsumed,
+}: Props) {
   const { menu } = useMenu();
   const { customers } = useCustomers();
-  const [activeCategory, setActiveCategory] = useState<string>('');
+  const [activeCategory, setActiveCategory] = useState<string>("");
   const [cart, setCart] = useState<OrderLineItem[]>([]);
   const [pendingItem, setPendingItem] = useState<MenuItem | null>(null);
-  const [amountInput, setAmountInput] = useState('');
+  const [amountInput, setAmountInput] = useState("");
   const [sending, setSending] = useState(false);
 
-  const [nameInput, setNameInput] = useState('');
-  const [selectedCustomer, setSelectedCustomer] = useState<CustomerWithStats | null>(null);
+  const [nameInput, setNameInput] = useState("");
+  const [selectedCustomer, setSelectedCustomer] =
+    useState<CustomerWithStats | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const [historyOpen, setHistoryOpen] = useState(false);
   const [historyOrders, setHistoryOrders] = useState<Order[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
-  const [fulfillment, setFulfillment] = useState<FulfillmentType>('in_store');
-  const [itemNoteInput, setItemNoteInput] = useState('');
-  const [orderNote, setOrderNote] = useState('');
+  const [fulfillment, setFulfillment] = useState<FulfillmentType>("in_store");
+  const [itemNoteInput, setItemNoteInput] = useState("");
+  const [orderNote, setOrderNote] = useState("");
 
-  const categories = useMemo(() => Array.from(new Set(menu.map((m) => m.category))), [menu]);
+  const categories = useMemo(
+    () => Array.from(new Set(menu.map((m) => m.category))),
+    [menu],
+  );
 
   useEffect(() => {
     if (menu.length > 0 && !activeCategory) {
@@ -60,9 +90,11 @@ export default function CounterScreen({ onOrderSent, recalledOrder, onRecallCons
 
     setCart(recalledOrder.items);
     setFulfillment(recalledOrder.fulfillment);
-    setOrderNote(recalledOrder.notes ?? '');
+    setOrderNote(recalledOrder.notes ?? "");
     if (recalledOrder.customerId) {
-      const match = customers.find((c) => c.customerId === recalledOrder.customerId);
+      const match = customers.find(
+        (c) => c.customerId === recalledOrder.customerId,
+      );
       if (match) {
         setSelectedCustomer(match);
         setNameInput(`${match.firstName} ${match.lastName}`);
@@ -75,7 +107,9 @@ export default function CounterScreen({ onOrderSent, recalledOrder, onRecallCons
     onRecallConsumed();
   }, [recalledOrder, customers, onRecallConsumed]);
 
-  const itemsInCategory = menu.filter((m) => m.category === activeCategory && m.isActive);
+  const itemsInCategory = menu.filter(
+    (m) => m.category === activeCategory && m.isActive,
+  );
 
   const suggestions = useMemo(() => {
     const q = nameInput.trim().toLowerCase();
@@ -87,8 +121,8 @@ export default function CounterScreen({ onOrderSent, recalledOrder, onRecallCons
 
   const startAdd = (item: MenuItem) => {
     setPendingItem(item);
-    setAmountInput('');
-    setItemNoteInput('');
+    setAmountInput("");
+    setItemNoteInput("");
   };
 
   const confirmAdd = () => {
@@ -109,17 +143,18 @@ export default function CounterScreen({ onOrderSent, recalledOrder, onRecallCons
       },
     ]);
     setPendingItem(null);
-    setAmountInput('');
-    setItemNoteInput('');
+    setAmountInput("");
+    setItemNoteInput("");
   };
 
   const removeLine = (index: number) => {
     setCart((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const cartTotal = Math.round(cart.reduce((sum, l) => sum + l.lineTotal, 0) * 100) / 100;
+  const cartTotal =
+    Math.round(cart.reduce((sum, l) => sum + l.lineTotal, 0) * 100) / 100;
 
-  const selectCustomer = (c: Customer) => {
+  const selectCustomer = (c: CustomerWithStats) => {
     setSelectedCustomer(c);
     setNameInput(`${c.firstName} ${c.lastName}`);
     setShowSuggestions(false);
@@ -127,7 +162,7 @@ export default function CounterScreen({ onOrderSent, recalledOrder, onRecallCons
 
   const clearCustomer = () => {
     setSelectedCustomer(null);
-    setNameInput('');
+    setNameInput("");
   };
 
   const openHistory = async () => {
@@ -148,31 +183,31 @@ export default function CounterScreen({ onOrderSent, recalledOrder, onRecallCons
     if (cart.length === 0 || sending) return;
     setSending(true);
     try {
-      const name =
-        selectedCustomer
-          ? `${selectedCustomer.firstName} ${selectedCustomer.lastName}`
-          : nameInput.trim() || `Order #${walkInCounter++}`;
+      const name = selectedCustomer
+        ? `${selectedCustomer.firstName} ${selectedCustomer.lastName}`
+        : nameInput.trim() || `Order #${walkInCounter++}`;
       await createOrder(
         name,
         cart,
         selectedCustomer?.customerId ?? null,
         fulfillment,
-        orderNote.trim() || undefined
+        orderNote.trim() || undefined,
       );
       setCart([]);
       clearCustomer();
-      setFulfillment('in_store');
-      setOrderNote('');
+      setFulfillment("in_store");
+      setOrderNote("");
       onOrderSent();
     } catch (err) {
       console.error(err);
-      alert('Could not send order — is the server running?');
+      alert("Could not send order — is the server running?");
     } finally {
       setSending(false);
     }
   };
 
-  const amountLabel = pendingItem?.soldBy === 'weight' ? 'Weight (lbs)' : 'Quantity';
+  const amountLabel =
+    pendingItem?.soldBy === "weight" ? "Weight (lbs)" : "Quantity";
   const amountValue = parseFloat(amountInput);
   const previewTotal =
     pendingItem && amountValue > 0 ? pendingItem.price * amountValue : null;
@@ -191,7 +226,7 @@ export default function CounterScreen({ onOrderSent, recalledOrder, onRecallCons
           return (
             <button
               key={cat}
-              className={`category-tab ${activeCategory === cat ? 'active' : ''}`}
+              className={`category-tab ${activeCategory === cat ? "active" : ""}`}
               onClick={() => setActiveCategory(cat)}
               title={cat}
             >
@@ -204,7 +239,11 @@ export default function CounterScreen({ onOrderSent, recalledOrder, onRecallCons
 
       <div className="item-grid">
         {itemsInCategory.map((item) => (
-          <button key={item.id} className="item-tile" onClick={() => startAdd(item)}>
+          <button
+            key={item.id}
+            className="item-tile"
+            onClick={() => startAdd(item)}
+          >
             <span className="item-name">{item.name}</span>
             <span className="item-price">
               ${item.price.toFixed(2)} {item.unit}
@@ -214,7 +253,10 @@ export default function CounterScreen({ onOrderSent, recalledOrder, onRecallCons
       </div>
 
       {pendingItem && (
-        <div className="amount-modal-backdrop" onClick={() => setPendingItem(null)}>
+        <div
+          className="amount-modal-backdrop"
+          onClick={() => setPendingItem(null)}
+        >
           <div className="amount-modal" onClick={(e) => e.stopPropagation()}>
             <h2>{pendingItem.name}</h2>
             <p className="amount-modal-price">
@@ -227,7 +269,7 @@ export default function CounterScreen({ onOrderSent, recalledOrder, onRecallCons
               placeholder={amountLabel}
               value={amountInput}
               onChange={(e) => setAmountInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && confirmAdd()}
+              onKeyDown={(e) => e.key === "Enter" && confirmAdd()}
             />
             {previewTotal !== null && (
               <p className="amount-modal-total">= ${previewTotal.toFixed(2)}</p>
@@ -240,7 +282,10 @@ export default function CounterScreen({ onOrderSent, recalledOrder, onRecallCons
               onChange={(e) => setItemNoteInput(e.target.value)}
             />
             <div className="amount-modal-actions">
-              <button className="btn-secondary" onClick={() => setPendingItem(null)}>
+              <button
+                className="btn-secondary"
+                onClick={() => setPendingItem(null)}
+              >
                 Cancel
               </button>
               <button className="btn-primary" onClick={confirmAdd}>
@@ -252,14 +297,18 @@ export default function CounterScreen({ onOrderSent, recalledOrder, onRecallCons
       )}
 
       {historyOpen && selectedCustomer && (
-        <div className="history-modal-backdrop" onClick={() => setHistoryOpen(false)}>
+        <div
+          className="history-modal-backdrop"
+          onClick={() => setHistoryOpen(false)}
+        >
           <div className="history-modal" onClick={(e) => e.stopPropagation()}>
             <h2>
               {selectedCustomer.firstName} {selectedCustomer.lastName}
             </h2>
             <p className="history-modal-meta">
               {selectedCustomer.loyaltyPoints} pts
-              {selectedCustomer.dietaryNotes && ` · ${selectedCustomer.dietaryNotes}`}
+              {selectedCustomer.dietaryNotes &&
+                ` · ${selectedCustomer.dietaryNotes}`}
             </p>
             <div className="history-modal-orders">
               {historyLoading && <p className="history-empty">Loading…</p>}
@@ -274,7 +323,7 @@ export default function CounterScreen({ onOrderSent, recalledOrder, onRecallCons
                       <span>${o.total.toFixed(2)}</span>
                     </div>
                     <p className="history-order-items">
-                      {o.items.map((i) => i.name).join(', ')}
+                      {o.items.map((i) => i.name).join(", ")}
                     </p>
                   </div>
                 ))}
@@ -286,21 +335,21 @@ export default function CounterScreen({ onOrderSent, recalledOrder, onRecallCons
       <div className="cart-panel">
         <div className="fulfillment-toggle">
           <button
-            className={`fulfillment-option ${fulfillment === 'in_store' ? 'active' : ''}`}
-            onClick={() => setFulfillment('in_store')}
+            className={`fulfillment-option ${fulfillment === "in_store" ? "active" : ""}`}
+            onClick={() => setFulfillment("in_store")}
           >
             In-Store
           </button>
           <button
-            className={`fulfillment-option ${fulfillment === 'pickup' ? 'active' : ''}`}
-            onClick={() => setFulfillment('pickup')}
+            className={`fulfillment-option ${fulfillment === "pickup" ? "active" : ""}`}
+            onClick={() => setFulfillment("pickup")}
           >
             <Store size={13} strokeWidth={2} />
             Pickup
           </button>
           <button
-            className={`fulfillment-option ${fulfillment === 'delivery' ? 'active' : ''}`}
-            onClick={() => setFulfillment('delivery')}
+            className={`fulfillment-option ${fulfillment === "delivery" ? "active" : ""}`}
+            onClick={() => setFulfillment("delivery")}
           >
             <Truck size={13} strokeWidth={2} />
             Delivery
@@ -343,16 +392,26 @@ export default function CounterScreen({ onOrderSent, recalledOrder, onRecallCons
           )}
         </div>
         <div className="cart-lines">
-          {cart.length === 0 && <p className="cart-empty">No items yet — tap a product above.</p>}
+          {cart.length === 0 && (
+            <p className="cart-empty">No items yet — tap a product above.</p>
+          )}
           {cart.map((line, i) => (
             <div className="cart-line" key={i}>
               <div className="cart-line-info">
                 <span className="cart-line-name">{line.name}</span>
                 <span className="cart-line-weight">{line.quantity}</span>
-                {line.notes && <span className="cart-line-note">"{line.notes}"</span>}
+                {line.notes && (
+                  <span className="cart-line-note">"{line.notes}"</span>
+                )}
               </div>
-              <span className="cart-line-total">${line.lineTotal.toFixed(2)}</span>
-              <button className="cart-line-remove" onClick={() => removeLine(i)} aria-label="Remove">
+              <span className="cart-line-total">
+                ${line.lineTotal.toFixed(2)}
+              </span>
+              <button
+                className="cart-line-remove"
+                onClick={() => removeLine(i)}
+                aria-label="Remove"
+              >
                 ×
               </button>
             </div>
@@ -374,7 +433,7 @@ export default function CounterScreen({ onOrderSent, recalledOrder, onRecallCons
           disabled={cart.length === 0 || sending}
           onClick={sendOrder}
         >
-          {sending ? 'Sending…' : 'Send order'}
+          {sending ? "Sending…" : "Send order"}
         </button>
       </div>
     </div>
