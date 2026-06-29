@@ -54,10 +54,6 @@ function formatTime(ts: number): string {
   });
 }
 
-function formatStatus(status: Order['status']): string {
-  return STATUS_LABEL[status];
-}
-
 function getOrderItems(order: Order): string {
   return order.items.map((item) => item.name).join(', ');
 }
@@ -65,7 +61,6 @@ function getOrderItems(order: Order): string {
 function matchesDate(order: Order, filter: DateFilter): boolean {
   if (filter === 'all') return true;
 
-  const now = new Date();
   const start = new Date();
   start.setHours(0, 0, 0, 0);
 
@@ -74,25 +69,24 @@ function matchesDate(order: Order, filter: DateFilter): boolean {
   }
 
   const days = filter === 'last7' ? 7 : 30;
-  const cutoff = new Date(now);
-  cutoff.setDate(now.getDate() - days);
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
   cutoff.setHours(0, 0, 0, 0);
 
   return order.createdAt >= cutoff.getTime();
 }
 
-function getHeroCopy(params: {
+function getFocusCopy(params: {
   status: StatusFilter;
-  source: SourceFilter;
   fulfillment: FulfillmentFilter;
   dateFilter: DateFilter;
   sort: SortKey;
 }) {
   if (params.status !== 'all') {
     return {
-      label: 'Status focus',
+      label: 'Current view',
       title: `${STATUS_LABEL[params.status]} orders`,
-      body: 'The table is focused by operational stage so you can quickly see what needs attention.',
+      body: 'Only this stage is shown. Use it to clear one operational lane at a time.',
       icon: PackageCheck,
       tone: 'rare',
     };
@@ -100,9 +94,9 @@ function getHeroCopy(params: {
 
   if (params.fulfillment === 'delivery') {
     return {
-      label: 'Fulfillment focus',
-      title: 'Delivery workload',
-      body: 'Delivery orders are isolated so address-sensitive work is easier to review.',
+      label: 'Current view',
+      title: 'Delivery orders',
+      body: 'Delivery work is isolated so addresses, notes, and timing stay easy to review.',
       icon: Truck,
       tone: 'sage',
     };
@@ -110,9 +104,9 @@ function getHeroCopy(params: {
 
   if (params.fulfillment === 'pickup') {
     return {
-      label: 'Fulfillment focus',
-      title: 'Pickup queue',
-      body: 'Pickup orders are grouped for counter readiness and customer handoff.',
+      label: 'Current view',
+      title: 'Pickup orders',
+      body: 'Pickup work is grouped for faster handoff at the counter.',
       icon: Store,
       tone: 'ochre',
     };
@@ -120,9 +114,9 @@ function getHeroCopy(params: {
 
   if (params.sort === 'totalHigh') {
     return {
-      label: 'Revenue focus',
-      title: 'Highest-value orders first',
-      body: 'Large-ticket orders are surfaced at the top for review and follow-up.',
+      label: 'Current view',
+      title: 'Highest totals first',
+      body: 'Large orders are surfaced first for review, prep priority, and follow-up.',
       icon: Receipt,
       tone: 'rare',
     };
@@ -130,18 +124,18 @@ function getHeroCopy(params: {
 
   if (params.dateFilter !== 'all') {
     return {
-      label: 'Time window',
-      title: params.dateFilter === 'today' ? "Today's orders" : 'Recent order activity',
-      body: 'The list is narrowed to the selected time period for fast operational review.',
+      label: 'Current view',
+      title: params.dateFilter === 'today' ? "Today’s orders" : 'Recent orders',
+      body: 'The table is narrowed to the selected time window.',
       icon: CalendarDays,
       tone: 'sage',
     };
   }
 
   return {
-    label: 'Order command center',
+    label: 'Current view',
     title: 'All orders',
-    body: 'Filter, sort, and scan every order from one clean operational table.',
+    body: 'Search, filter, and sort every order from one simple control page.',
     icon: ClipboardList,
     tone: 'ink',
   };
@@ -200,21 +194,31 @@ export default function OrdersPage() {
     });
   }, [orders, query, statusFilter, sourceFilter, fulfillmentFilter, dateFilter, sort]);
 
-  const nonCancelled = filteredOrders.filter((order) => order.status !== 'cancelled');
-  const revenue = nonCancelled.reduce((sum, order) => sum + order.total, 0);
-  const avgTicket = nonCancelled.length > 0 ? revenue / nonCancelled.length : 0;
-  const activeCount = filteredOrders.filter((order) =>
+  const activeOrders = filteredOrders.filter((order) =>
     ['placed', 'in_prep', 'ready'].includes(order.status),
-  ).length;
+  );
+  const completedOrders = filteredOrders.filter((order) => order.status === 'completed');
+  const revenueOrders = filteredOrders.filter((order) => order.status !== 'cancelled');
 
-  const hero = getHeroCopy({
+  const revenue = revenueOrders.reduce((sum, order) => sum + order.total, 0);
+  const avgTicket = revenueOrders.length > 0 ? revenue / revenueOrders.length : 0;
+
+  const focus = getFocusCopy({
     status: statusFilter,
-    source: sourceFilter,
     fulfillment: fulfillmentFilter,
     dateFilter,
     sort,
   });
-  const HeroIcon = hero.icon;
+  const FocusIcon = focus.icon;
+
+  const clearFilters = () => {
+    setQuery('');
+    setStatusFilter('all');
+    setSourceFilter('all');
+    setFulfillmentFilter('all');
+    setDateFilter('all');
+    setSort('newest');
+  };
 
   if (loading) {
     return (
@@ -234,14 +238,15 @@ export default function OrdersPage() {
         </div>
       </header>
 
-      <section className={`orders-hero orders-hero-${hero.tone}`}>
+      <section className={`orders-hero orders-hero-${focus.tone}`}>
         <div className="orders-hero-copy">
-          <span>{hero.label}</span>
-          <h2>{hero.title}</h2>
-          <p>{hero.body}</p>
+          <span>{focus.label}</span>
+          <h2>{focus.title}</h2>
+          <p>{focus.body}</p>
         </div>
+
         <div className="orders-hero-graphic">
-          <HeroIcon size={54} strokeWidth={1.6} />
+          <FocusIcon size={54} strokeWidth={1.6} />
           <div className="orders-hero-bars">
             <i />
             <i />
@@ -253,20 +258,23 @@ export default function OrdersPage() {
 
       <div className="orders-kpis">
         <div className="kpi-card">
-          <span className="kpi-label">Matching orders</span>
+          <span className="kpi-label">Shown</span>
           <span className="kpi-value">{filteredOrders.length}</span>
         </div>
+
         <div className="kpi-card">
-          <span className="kpi-label">Revenue</span>
-          <span className="kpi-value">${revenue.toFixed(2)}</span>
+          <span className="kpi-label">Active</span>
+          <span className="kpi-value">{activeOrders.length}</span>
         </div>
+
+        <div className="kpi-card">
+          <span className="kpi-label">Completed</span>
+          <span className="kpi-value">{completedOrders.length}</span>
+        </div>
+
         <div className="kpi-card">
           <span className="kpi-label">Avg ticket</span>
           <span className="kpi-value">${avgTicket.toFixed(2)}</span>
-        </div>
-        <div className="kpi-card">
-          <span className="kpi-label">Active</span>
-          <span className="kpi-value">{activeCount}</span>
         </div>
       </div>
 
@@ -276,7 +284,7 @@ export default function OrdersPage() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search customer, item, order id…"
+            placeholder="Search customer, item, or order id…"
           />
         </div>
 
@@ -343,9 +351,14 @@ export default function OrdersPage() {
             <h2>Order table</h2>
             <p>
               <Activity size={13} strokeWidth={2} />
-              {filteredOrders.length} result{filteredOrders.length === 1 ? '' : 's'}
+              ${revenue.toFixed(2)} revenue in this view
             </p>
           </div>
+
+          <button className="btn btn-secondary" type="button" onClick={clearFilters}>
+            Clear filters
+          </button>
+
           <div className="orders-sort-chip">
             <ArrowDownUp size={13} strokeWidth={2} />
             {sort}
@@ -366,6 +379,7 @@ export default function OrdersPage() {
                 <th className="align-right">Total</th>
               </tr>
             </thead>
+
             <tbody>
               {filteredOrders.length === 0 && (
                 <tr>
@@ -381,7 +395,9 @@ export default function OrdersPage() {
                     <strong>{order.id}</strong>
                     <span>{formatTime(order.createdAt)}</span>
                   </td>
+
                   <td>{order.customerName || 'Walk-in'}</td>
+
                   <td>
                     <div className="orders-items">
                       {order.items.map((item) => (
@@ -391,11 +407,13 @@ export default function OrdersPage() {
                       ))}
                     </div>
                   </td>
+
                   <td>
                     <span className={`orders-status orders-status-${order.status}`}>
-                      {formatStatus(order.status)}
+                      {STATUS_LABEL[order.status]}
                     </span>
                   </td>
+
                   <td>{SOURCE_LABEL[order.source]}</td>
                   <td>{FULFILLMENT_LABEL[order.fulfillment]}</td>
                   <td>{formatDate(order.createdAt)}</td>

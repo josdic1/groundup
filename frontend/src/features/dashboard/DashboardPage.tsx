@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
-  Printer,
-  TrendingUp,
-  ShoppingBag,
-  Receipt,
   Activity,
+  Printer,
+  Receipt,
+  ShoppingBag,
+  TrendingUp,
 } from 'lucide-react';
 import {
   BarChart,
@@ -60,6 +60,10 @@ function orderDateKey(order: Order): string {
   return new Date(order.createdAt).toISOString().slice(0, 10);
 }
 
+function getBestRevenueDay(stats: Stats) {
+  return [...stats.revenueByDay].sort((a, b) => b.revenue - a.revenue)[0] ?? null;
+}
+
 export default function Dashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -101,10 +105,15 @@ export default function Dashboard() {
     return <div className="dashboard-loading">Could not load dashboard data.</div>;
   }
 
-  const peakHour = stats.busiestHours.reduce(
-    (best, h) => (h.count > best.count ? h : best),
-    stats.busiestHours[0],
-  );
+  const peakHour =
+    stats.busiestHours.reduce(
+      (best, h) => (h.count > best.count ? h : best),
+      stats.busiestHours[0],
+    ) ?? { hour: 0, count: 0 };
+
+  const bestRevenueDay = getBestRevenueDay(stats);
+  const topItem = stats.topByRevenue[0];
+  const topCategory = stats.revenueByCategory[0];
 
   return (
     <div className="dashboard">
@@ -113,6 +122,7 @@ export default function Dashboard() {
           <span className="dashboard-eyebrow">Maple Kosher Meats</span>
           <h1>Dashboard</h1>
         </div>
+
         <button className="print-btn" onClick={handlePrint}>
           <Printer size={15} strokeWidth={2} />
           Print report
@@ -127,6 +137,7 @@ export default function Dashboard() {
           <span className="glance-label">Today's revenue</span>
           <span className="glance-value">${stats.todayRevenue.toFixed(2)}</span>
         </div>
+
         <div className="glance-card">
           <div className="glance-icon">
             <ShoppingBag size={16} strokeWidth={2} />
@@ -134,6 +145,7 @@ export default function Dashboard() {
           <span className="glance-label">Orders today</span>
           <span className="glance-value">{stats.todayOrderCount}</span>
         </div>
+
         <div className="glance-card">
           <div className="glance-icon">
             <TrendingUp size={16} strokeWidth={2} />
@@ -141,6 +153,7 @@ export default function Dashboard() {
           <span className="glance-label">Avg ticket</span>
           <span className="glance-value">${stats.avgTicket.toFixed(2)}</span>
         </div>
+
         <div className="glance-card">
           <div className="glance-icon">
             <Activity size={16} strokeWidth={2} />
@@ -150,12 +163,58 @@ export default function Dashboard() {
         </div>
       </div>
 
+      <section className="dashboard-panel panel-wide">
+        <div className="dashboard-panel-head">
+          <h2>Today’s read</h2>
+          <span>Simple business summary</span>
+        </div>
+
+        <ol className="ranked-list">
+          <li>
+            <span className="rank-num">1</span>
+            <span className="rank-name">
+              Peak activity is around {formatHourLabel(peakHour.hour)}.
+            </span>
+            <span className="rank-value">{peakHour.count} orders</span>
+          </li>
+
+          {topItem && (
+            <li>
+              <span className="rank-num">2</span>
+              <span className="rank-name">Best item by revenue is {topItem.name}.</span>
+              <span className="rank-value">${topItem.revenue.toFixed(2)}</span>
+            </li>
+          )}
+
+          {topCategory && (
+            <li>
+              <span className="rank-num">3</span>
+              <span className="rank-name">
+                Leading category is {shortCategory(topCategory.category)}.
+              </span>
+              <span className="rank-value">${topCategory.revenue.toFixed(2)}</span>
+            </li>
+          )}
+
+          {bestRevenueDay && (
+            <li>
+              <span className="rank-num">4</span>
+              <span className="rank-name">
+                Best day in the range was {formatDayLabel(bestRevenueDay.date)}.
+              </span>
+              <span className="rank-value">${bestRevenueDay.revenue.toFixed(2)}</span>
+            </li>
+          )}
+        </ol>
+      </section>
+
       <div className="dashboard-grid">
         <section className="dashboard-panel panel-wide">
           <div className="dashboard-panel-head">
             <h2>Revenue — last 30 days</h2>
             <span>Click a bar for daily sales</span>
           </div>
+
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={stats.revenueByDay}>
               <CartesianGrid
@@ -193,6 +252,7 @@ export default function Dashboard() {
 
         <section className="dashboard-panel panel-wide">
           <h2>Category trend — last 30 days</h2>
+
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={stats.categoryTrend}>
               <CartesianGrid
@@ -220,6 +280,7 @@ export default function Dashboard() {
                 iconType="line"
                 iconSize={14}
               />
+
               {stats.topCategoryNames.map((cat, i) => (
                 <Line
                   key={cat}
@@ -264,11 +325,11 @@ export default function Dashboard() {
         <section className="dashboard-panel">
           <h2>Revenue by category</h2>
           <ol className="ranked-list">
-            {stats.revenueByCategory.map((c, i) => (
-              <li key={c.category}>
+            {stats.revenueByCategory.map((category, i) => (
+              <li key={category.category}>
                 <span className="rank-num">{i + 1}</span>
-                <span className="rank-name">{c.category}</span>
-                <span className="rank-value">${c.revenue.toFixed(2)}</span>
+                <span className="rank-name">{shortCategory(category.category)}</span>
+                <span className="rank-value">${category.revenue.toFixed(2)}</span>
               </li>
             ))}
           </ol>
@@ -279,6 +340,7 @@ export default function Dashboard() {
           <p className="dashboard-subnote">
             Peak: {formatHourLabel(peakHour.hour)} ({peakHour.count} orders)
           </p>
+
           <ResponsiveContainer width="100%" height={160}>
             <BarChart data={stats.busiestHours}>
               <XAxis
