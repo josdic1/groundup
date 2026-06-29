@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react';
 import { useLocation } from 'react-router-dom';
 import type { Order } from '@groundup/shared-types';
 import CounterScreen from './components/CounterScreen';
@@ -13,11 +13,16 @@ type StartOrderState = {
 const MIN_COUNTER_WIDTH = 360;
 const MIN_STREAM_WIDTH = 420;
 const DEFAULT_COUNTER_PERCENT = 52;
+const STORAGE_KEY = 'groundup-counter-width';
 
 export default function MainPage() {
   const [refreshSignal, setRefreshSignal] = useState(0);
   const [recalledOrder, setRecalledOrder] = useState<Order | null>(null);
-  const [counterWidth, setCounterWidth] = useState(DEFAULT_COUNTER_PERCENT);
+  const [counterWidth, setCounterWidth] = useState(() => {
+    const saved = Number(localStorage.getItem(STORAGE_KEY));
+    return Number.isFinite(saved) && saved > 0 ? saved : DEFAULT_COUNTER_PERCENT;
+  });
+
   const appRef = useRef<HTMLDivElement | null>(null);
   const location = useLocation();
 
@@ -54,24 +59,26 @@ export default function MainPage() {
     }
   };
 
-  const startResize = (event: React.PointerEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-
+  const updateCounterWidth = (clientX: number) => {
     const container = appRef.current;
     if (!container) return;
 
     const rect = container.getBoundingClientRect();
-    const pointerId = event.pointerId;
+    const rawPercent = ((clientX - rect.left) / rect.width) * 100;
+    const minPercent = (MIN_COUNTER_WIDTH / rect.width) * 100;
+    const maxPercent = ((rect.width - MIN_STREAM_WIDTH) / rect.width) * 100;
+    const nextWidth = Math.min(Math.max(rawPercent, minPercent), maxPercent);
 
-    event.currentTarget.setPointerCapture(pointerId);
+    setCounterWidth(nextWidth);
+    localStorage.setItem(STORAGE_KEY, String(nextWidth));
+  };
 
-    const handleMove = (moveEvent: PointerEvent) => {
-      const rawLeftWidth = moveEvent.clientX - rect.left;
-      const minLeftPercent = (MIN_COUNTER_WIDTH / rect.width) * 100;
-      const maxLeftPercent = ((rect.width - MIN_STREAM_WIDTH) / rect.width) * 100;
-      const nextWidth = (rawLeftWidth / rect.width) * 100;
+  const startResize = (event: PointerEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
 
-      setCounterWidth(Math.min(Math.max(nextWidth, minLeftPercent), maxLeftPercent));
+    const handleMove = (moveEvent: globalThis.PointerEvent) => {
+      updateCounterWidth(moveEvent.clientX);
     };
 
     const handleUp = () => {
@@ -83,11 +90,16 @@ export default function MainPage() {
     window.addEventListener('pointerup', handleUp);
   };
 
+  const resetWidth = () => {
+    setCounterWidth(DEFAULT_COUNTER_PERCENT);
+    localStorage.setItem(STORAGE_KEY, String(DEFAULT_COUNTER_PERCENT));
+  };
+
   return (
     <div
       ref={appRef}
       className="mkb-app"
-      style={{ '--counter-width': `${counterWidth}%` } as React.CSSProperties}
+      style={{ '--counter-width': `${counterWidth}%` } as CSSProperties}
     >
       <div className="mkb-counter-pane">
         <CounterScreen
@@ -101,7 +113,9 @@ export default function MainPage() {
         className="mkb-resize-handle"
         type="button"
         aria-label="Resize counter and order stream panes"
+        title="Drag to resize. Double-click to reset."
         onPointerDown={startResize}
+        onDoubleClick={resetWidth}
       />
 
       <div className="mkb-stream-pane">
