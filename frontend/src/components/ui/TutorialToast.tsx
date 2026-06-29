@@ -350,7 +350,7 @@ export default function TutorialToast() {
       )}
 
       {tourOpen && (
-        <div className="tutorial-modal-backdrop" onClick={closeTour}>
+        <div className={`tutorial-modal-backdrop tutorial-page-focus tutorial-focus-${current.preview}`} onClick={closeTour}>
           <div className="tutorial-modal tutorial-modal-visual" onClick={(event) => event.stopPropagation()}>
             <button
               className="tutorial-modal-close"

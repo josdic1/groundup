@@ -5285,3 +5285,164 @@ button:focus-visible,
 .tutorial-modal-visual {
   box-shadow: 0 32px 90px rgba(15, 10, 6, 0.34) !important;
 }
+
+
+/* =========================================
+   Live page walkthrough spotlight
+   ========================================= */
+
+.tutorial-page-focus {
+  background: rgba(28, 20, 16, 0.10) !important;
+  backdrop-filter: blur(1px) !important;
+}
+
+.tutorial-page-focus::before {
+  content: "";
+  position: fixed;
+  z-index: 0;
+  pointer-events: none;
+  border: 2px solid rgba(162, 59, 46, 0.56);
+  border-radius: 24px;
+  background: rgba(255, 252, 246, 0.05);
+  box-shadow:
+    0 0 0 9999px rgba(28, 20, 16, 0.16),
+    0 22px 70px rgba(28, 20, 16, 0.22),
+    inset 0 0 0 1px rgba(255, 252, 246, 0.58);
+  animation: tutorialFocusPulse 1.9s ease-in-out infinite;
+  transition:
+    top 220ms ease,
+    left 220ms ease,
+    width 220ms ease,
+    height 220ms ease;
+}
+
+.tutorial-page-focus::after {
+  content: "Live area";
+  position: fixed;
+  z-index: 1;
+  pointer-events: none;
+  padding: 7px 10px;
+  border: 1px solid rgba(162, 59, 46, 0.25);
+  border-radius: 999px;
+  background: rgba(255, 252, 246, 0.94);
+  color: var(--brand);
+  box-shadow: 0 12px 30px rgba(28, 20, 16, 0.16);
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tutorial-page-focus > .tutorial-modal {
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes tutorialFocusPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    border-color: rgba(162, 59, 46, 0.48);
+  }
+
+  50% {
+    transform: scale(1.006);
+    border-color: rgba(162, 59, 46, 0.76);
+  }
+}
+
+/* Register: split counter + stream */
+.tutorial-focus-register::before {
+  top: 92px;
+  left: 22px;
+  width: calc(100vw - 44px);
+  height: calc(100vh - 116px);
+}
+
+.tutorial-focus-register::after {
+  top: 104px;
+  left: 38px;
+  content: "Register + stream";
+}
+
+/* Online ordering */
+.tutorial-focus-online::before {
+  top: 118px;
+  left: max(22px, calc(50vw - 430px));
+  width: min(860px, calc(100vw - 44px));
+  height: min(590px, calc(100vh - 148px));
+}
+
+.tutorial-focus-online::after {
+  top: 130px;
+  left: max(38px, calc(50vw - 412px));
+  content: "Online ordering";
+}
+
+/* Orders table/list */
+.tutorial-focus-orders::before {
+  top: 132px;
+  left: 28px;
+  width: calc(100vw - 56px);
+  height: min(620px, calc(100vh - 160px));
+}
+
+.tutorial-focus-orders::after {
+  top: 144px;
+  left: 44px;
+  content: "Orders dashboard";
+}
+
+/* Customers page */
+.tutorial-focus-customers::before {
+  top: 128px;
+  left: 28px;
+  width: calc(100vw - 56px);
+  height: min(640px, calc(100vh - 156px));
+}
+
+.tutorial-focus-customers::after {
+  top: 140px;
+  left: 44px;
+  content: "Customer desk";
+}
+
+/* Reports page */
+.tutorial-focus-reports::before {
+  top: 128px;
+  left: 28px;
+  width: calc(100vw - 56px);
+  height: min(640px, calc(100vh - 156px));
+}
+
+.tutorial-focus-reports::after {
+  top: 140px;
+  left: 44px;
+  content: "Reports";
+}
+
+/* Mobile dashboard */
+.tutorial-focus-mobile::before {
+  top: 92px;
+  left: max(18px, calc(50vw - 210px));
+  width: min(420px, calc(100vw - 36px));
+  height: calc(100vh - 116px);
+}
+
+.tutorial-focus-mobile::after {
+  top: 104px;
+  left: max(34px, calc(50vw - 194px));
+  content: "Mobile admin";
+}
+
+@media (max-width: 780px) {
+  .tutorial-page-focus::before,
+  .tutorial-page-focus::after {
+    display: none;
+  }
+
+  .tutorial-page-focus {
+    background: rgba(28, 20, 16, 0.34) !important;
+    backdrop-filter: blur(5px) !important;
+  }
+}
