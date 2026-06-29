@@ -19,6 +19,24 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get("/api/health", (_req, res) => {
+  res.json({
+    ok: true,
+    service: "groundup-backend",
+    status: "healthy",
+  });
+});
+
+app.get("/health", (_req, res) => {
+  res.json({
+    ok: true,
+    service: "groundup-backend",
+    status: "healthy",
+  });
+});
+
+
+
 // --- Helpers ---
 const formatCurrency = (num: number) => Math.round(num * 100) / 100;
 const formatDecimal = (num: number) => Math.round(num * 10) / 10;
