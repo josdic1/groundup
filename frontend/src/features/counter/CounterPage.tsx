@@ -110,7 +110,7 @@ export default function MainPage() {
     >
       <div className="mkb-resize-hint" aria-hidden="true">
         <span className="mkb-resize-hint-arrow">↔</span>
-        <span>Drag divider to resize</span>
+        <span>Resize</span>
       </div>
 
       <div className="mkb-counter-pane">
