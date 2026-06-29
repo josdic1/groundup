@@ -17,9 +17,9 @@ import type {
   FulfillmentType,
   CustomerWithStats,
 } from "@groundup/shared-types";
-import { createOrder, fetchCustomerOrders } from "../../api/orders";
-import { useMenu } from "../../hooks/useMenu";
-import { useCustomers } from "../../hooks/useCustomers";
+import { createOrder, fetchCustomerOrders } from "../../../api/orders";
+import { useMenu } from "../../../hooks/useMenu";
+import { useCustomers } from "../../../hooks/useCustomers";
 import "./CounterScreen.css";
 
 const CATEGORY_META: Record<string, { label: string; icon: typeof Beef }> = {

@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import TopNav from '../components/nav/TopNav';
-import MainPage from '../pages/CounterPage';
-import OnlineOrder from '../pages/OnlineOrderPage';
-import Dashboard from '../pages/DashboardPage';
-import CustomersPage from '../pages/CustomersPage';
-import MenuPage from '../pages/MenuPage';
+import TopNav from './nav/TopNav';
+import MainPage from '../features/counter/CounterPage';
+import OnlineOrder from '../features/online-order/OnlineOrderPage';
+import Dashboard from '../features/dashboard/DashboardPage';
+import CustomersPage from '../features/customers/CustomersPage';
+import MenuPage from '../features/menu/MenuPage';
 import Toast from '../components/ui/Toast';
 import { MenuProvider } from '../providers/MenuProvider';
 import './App.shell.css';

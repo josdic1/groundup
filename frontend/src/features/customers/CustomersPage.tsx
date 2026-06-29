@@ -18,10 +18,10 @@ import {
   fetchCustomerOrderHistory,
   createCustomer,
   updateCustomer,
-} from '../api/customers';
-import { invalidateCustomersCache } from '../hooks/useCustomers';
-import CustomerEditModal from '../components/customers/CustomerEditModal';
-import CustomerInsightsModal from '../components/customers/CustomerInsightsModal';
+} from '../../api/customers';
+import { invalidateCustomersCache } from '../../hooks/useCustomers';
+import CustomerEditModal from './components/CustomerEditModal';
+import CustomerInsightsModal from './components/CustomerInsightsModal';
 import './CustomersPage.css';
 
 type SortKey = 'name' | 'loyaltyPoints' | 'totalSpent' | 'orderCount' | 'lastOrderAt';

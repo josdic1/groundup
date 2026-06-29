@@ -1,11 +1,11 @@
 import { useState, useMemo } from 'react';
 import { Beef, Bird, Drumstick, Flame, Sandwich, CupSoda, Store, Truck, ShoppingCart, Check, History } from 'lucide-react';
 import type { MenuItem, OrderLineItem, SizeTier, Address, Order, CustomerWithStats } from '@groundup/shared-types';
-import { MENU_TIERS } from '../data/menuTiers';
-import { createOnlineOrder } from '../api/online-orders';
-import { fetchCustomerOrders } from '../api/orders';
-import { useMenu } from '../hooks/useMenu';
-import { useCustomers } from '../hooks/useCustomers';
+import { MENU_TIERS } from '../../data/menuTiers';
+import { createOnlineOrder } from '../../api/online-orders';
+import { fetchCustomerOrders } from '../../api/orders';
+import { useMenu } from '../../hooks/useMenu';
+import { useCustomers } from '../../hooks/useCustomers';
 import './OnlineOrderPage.css';
 
 const CATEGORY_META: Record<string, { label: string; icon: typeof Beef }> = {

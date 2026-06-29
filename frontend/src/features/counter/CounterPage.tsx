@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import type { Order } from '@groundup/shared-types';
-import CounterScreen from '../components/orders/CounterScreen';
-import OrderStream from '../components/orders/OrderStream';
-import { deleteOrder } from '../api/orders';
-import '../App.layout.css';
+import CounterScreen from './components/CounterScreen';
+import OrderStream from './components/OrderStream';
+import { deleteOrder } from '../../api/orders';
+import '../../app/App.layout.css';
 
 type StartOrderState = {
   startOrderForCustomerId?: string;

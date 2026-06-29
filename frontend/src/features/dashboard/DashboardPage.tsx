@@ -18,7 +18,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { fetchStats, type Stats } from "../api/stats";
+import { fetchStats, type Stats } from "../../api/stats";
 import "./DashboardPage.css";
 
 const SHORT_CATEGORY: Record<string, string> = {
