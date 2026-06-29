@@ -4007,3 +4007,149 @@ button:focus-visible,
   position: relative;
   z-index: 1;
 }
+
+
+/* =========================================
+   Counter / stream resize hint
+   ========================================= */
+
+.mkb-app {
+  position: relative;
+}
+
+.mkb-resize-hint {
+  position: absolute;
+  top: 88px;
+  left: var(--counter-width);
+  z-index: 20;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border: 1px solid rgba(28, 20, 16, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.52);
+  color: rgba(28, 20, 16, 0.38);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 10px 24px rgba(28, 20, 16, 0.055);
+  backdrop-filter: blur(7px);
+  transform: translateX(-50%);
+}
+
+.mkb-resize-hint-arrow {
+  color: rgba(28, 20, 16, 0.48);
+  font-size: 14px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.mkb-resize-handle {
+  cursor: col-resize;
+}
+
+@media (max-width: 900px) {
+  .mkb-resize-hint {
+    display: none;
+  }
+}
+
+
+/* =========================================
+   Visible divider resize hint
+   ========================================= */
+
+.mkb-resize-hint {
+  display: none !important;
+}
+
+.mkb-resize-handle {
+  position: relative;
+  z-index: 60;
+  cursor: col-resize;
+}
+
+.mkb-resize-handle::after {
+  content: "↔ Drag to resize";
+  position: absolute;
+  top: 82px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 80;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  padding: 7px 12px;
+  border: 1.5px solid rgba(28, 20, 16, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 252, 246, 0.88);
+  color: rgba(28, 20, 16, 0.58);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  box-shadow: 0 10px 24px rgba(28, 20, 16, 0.12);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+
+.mkb-resize-handle:hover::after {
+  border-color: rgba(162, 59, 46, 0.28);
+  color: rgba(162, 59, 46, 0.88);
+  background: rgba(255, 252, 246, 0.96);
+}
+
+@media (max-width: 900px) {
+  .mkb-resize-handle::after {
+    display: none;
+  }
+}
+
+
+/* =========================================
+   Final visible elegant divider hint
+   ========================================= */
+
+.mkb-app .mkb-resize-hint {
+  position: absolute !important;
+  top: 76px !important;
+  left: var(--counter-width) !important;
+  z-index: 999 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  padding: 7px 11px !important;
+  border: 1.5px solid rgba(28, 20, 16, 0.16) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 252, 246, 0.9) !important;
+  color: rgba(28, 20, 16, 0.56) !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.035em !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  pointer-events: none !important;
+  box-shadow: 0 10px 26px rgba(28, 20, 16, 0.12) !important;
+  backdrop-filter: blur(8px) !important;
+  transform: translateX(-50%) !important;
+}
+
+.mkb-app .mkb-resize-hint-arrow {
+  color: rgba(162, 59, 46, 0.7) !important;
+  font-size: 13px !important;
+  font-weight: 950 !important;
+}
+
+.mkb-resize-handle::after {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .mkb-app .mkb-resize-hint {
+    display: none !important;
+  }
+}

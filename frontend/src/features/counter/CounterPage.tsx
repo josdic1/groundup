@@ -100,6 +100,11 @@ export default function MainPage() {
       className="mkb-app"
       style={{ '--counter-width': `${counterWidth}%` } as CSSProperties}
     >
+      <div className="mkb-resize-hint" aria-hidden="true">
+        <span className="mkb-resize-hint-arrow">↔</span>
+        <span>Drag divider to resize</span>
+      </div>
+
       <div className="mkb-counter-pane">
         <CounterScreen
           onOrderSent={() => setRefreshSignal((n) => n + 1)}
