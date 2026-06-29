@@ -3971,3 +3971,39 @@ button:focus-visible,
   position: relative;
   z-index: 1;
 }
+
+
+/* =========================================
+   Stream pane visible faint watermark
+   ========================================= */
+
+.mkb-stream-pane::before {
+  display: none;
+}
+
+.mkb-stream-pane {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.mkb-stream-pane::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+  background-image: url("/script-black.png");
+  background-repeat: no-repeat;
+  background-position: center 56%;
+  background-size: min(620px, 58%);
+  opacity: 0.055;
+  filter: grayscale(1) contrast(0.9);
+  transform: rotate(-3deg);
+  mix-blend-mode: multiply;
+}
+
+.mkb-stream-pane > * {
+  position: relative;
+  z-index: 1;
+}
