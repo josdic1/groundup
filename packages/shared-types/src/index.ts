@@ -1,4 +1,4 @@
-export type SoldBy = 'weight' | 'each';
+export type SoldBy = "weight" | "each";
 
 export type MenuItem = {
   id: string;
@@ -28,16 +28,20 @@ export type Customer = {
   address: Address;
 };
 
-// Customer enriched with computed order stats, returned by GET /api/customers
 export type CustomerWithStats = Customer & {
   totalSpent: number;
   orderCount: number;
   lastOrderAt: number | null;
 };
 
-export type OrderStatus = 'placed' | 'in_prep' | 'ready' | 'completed' | 'cancelled';
-export type OrderSource = 'counter' | 'online';
-export type FulfillmentType = 'in_store' | 'pickup' | 'delivery';
+export type OrderStatus =
+  | "placed"
+  | "in_prep"
+  | "ready"
+  | "completed"
+  | "cancelled";
+export type OrderSource = "counter" | "online";
+export type FulfillmentType = "in_store" | "pickup" | "delivery";
 
 export type SizeTier = {
   label: string;
@@ -73,4 +77,12 @@ export type Order = {
   notes?: string;
   deliveryAddress?: Address;
   scheduledFor?: number;
+};
+
+export type Staff = {
+  id: string;
+  name: string;
+  role: "admin" | "counter" | "prep";
+  isActive: boolean;
+  pin?: string;
 };

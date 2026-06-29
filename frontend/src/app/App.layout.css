@@ -4,34 +4,78 @@
   width: 100%;
   overflow: hidden;
   background: var(--paper-dim, #f0e9da);
+  --counter-width: 52%;
 }
 
 .mkb-counter-pane {
-  width: 42%;
-  min-width: 380px;
+  width: var(--counter-width);
+  min-width: 360px;
   height: 100%;
-  border-right: 2px solid var(--ink, #1c1410);
   background: var(--paper, #faf6ee);
+  overflow: hidden;
 }
 
 .mkb-stream-pane {
   flex: 1;
+  min-width: 420px;
   height: 100%;
   overflow: hidden;
+}
+
+.mkb-resize-handle {
+  position: relative;
+  flex: 0 0 12px;
+  height: 100%;
+  padding: 0;
+  border: none;
+  border-left: 2px solid var(--ink, #1c1410);
+  background: transparent;
+  cursor: col-resize;
+  z-index: 5;
+}
+
+.mkb-resize-handle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 3px;
+  height: 52px;
+  border-radius: 999px;
+  background: rgba(28, 20, 16, 0.28);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.mkb-resize-handle:hover::after,
+.mkb-resize-handle:focus-visible::after {
+  opacity: 1;
+}
+
+.mkb-resize-handle:focus-visible {
+  outline: 3px solid var(--rare);
+  outline-offset: -3px;
 }
 
 @media (max-width: 900px) {
   .mkb-app {
     flex-direction: column;
   }
+
   .mkb-counter-pane {
     width: 100%;
     min-width: 0;
     height: 55%;
-    border-right: none;
     border-bottom: 2px solid var(--ink, #1c1410);
   }
+
+  .mkb-resize-handle {
+    display: none;
+  }
+
   .mkb-stream-pane {
+    min-width: 0;
     height: 45%;
   }
 }
