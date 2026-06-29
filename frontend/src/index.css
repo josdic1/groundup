@@ -4153,3 +4153,128 @@ button:focus-visible,
     display: none !important;
   }
 }
+
+
+/* =========================================
+   Mobile counter / stream layout fix
+   ========================================= */
+
+@media (max-width: 820px) {
+  html,
+  body,
+  #root {
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  .top-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .top-nav-brand {
+    flex: 0 0 auto;
+    max-width: 145px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .top-nav-links {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .top-nav-links::-webkit-scrollbar {
+    display: none;
+  }
+
+  .top-nav-link {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .mkb-app {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: calc(100vh - 44px) !important;
+    overflow: visible !important;
+  }
+
+  .mkb-counter-pane,
+  .mkb-stream-pane {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    flex: none !important;
+  }
+
+  .mkb-counter-pane {
+    min-height: auto !important;
+    border-right: 0 !important;
+    border-bottom: 2px solid rgba(28, 20, 16, 0.85) !important;
+  }
+
+  .mkb-stream-pane {
+    min-height: 420px !important;
+    padding-bottom: 28px !important;
+  }
+
+  .mkb-resize-handle,
+  .mkb-resize-hint,
+  .mkb-resize-handle::after {
+    display: none !important;
+  }
+
+  .counter-screen,
+  .online-order,
+  .customers-page,
+  .orders-page,
+  .dashboard-page {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .category-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .counter-item-grid,
+  .online-item-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .top-nav {
+    gap: 8px;
+  }
+
+  .top-nav-brand {
+    max-width: 118px;
+    font-size: 11px;
+  }
+
+  .top-nav-link {
+    min-height: 34px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .category-tabs {
+    gap: 6px !important;
+  }
+
+  .mkb-stream-pane {
+    min-height: 360px !important;
+  }
+}
