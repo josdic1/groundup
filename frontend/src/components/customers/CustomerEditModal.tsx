@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { X } from 'lucide-react';
-import type { CustomerWithStats, Address } from '@groundup/shared-types';
-import './CustomerEditModal.css';
+import { useState } from "react";
+import { X } from "lucide-react";
+import type { CustomerWithStats, Address } from "@groundup/shared-types";
+import "./CustomerEditModal.css";
 
 type Props = {
   customer: CustomerWithStats | null;
@@ -17,32 +17,47 @@ type Props = {
   }) => Promise<void>;
 };
 
-export default function CustomerEditModal({ customer, onClose, onSave }: Props) {
-  const [firstName, setFirstName] = useState(customer?.firstName ?? '');
-  const [lastName, setLastName] = useState(customer?.lastName ?? '');
-  const [phone, setPhone] = useState(customer?.phone ?? '');
-  const [email, setEmail] = useState(customer?.email ?? '');
-  const [loyaltyPoints, setLoyaltyPoints] = useState(String(customer?.loyaltyPoints ?? 0));
-  const [dietaryNotes, setDietaryNotes] = useState(customer?.dietaryNotes ?? '');
-  const [street, setStreet] = useState(customer?.address?.street ?? '');
-  const [city, setCity] = useState(customer?.address?.city ?? '');
-  const [zip, setZip] = useState(customer?.address?.zip ?? '');
+export default function CustomerEditModal({
+  customer,
+  onClose,
+  onSave,
+}: Props) {
+  const [formData, setFormData] = useState({
+    firstName: customer?.firstName ?? "",
+    lastName: customer?.lastName ?? "",
+    phone: customer?.phone ?? "",
+    email: customer?.email ?? "",
+    loyaltyPoints: String(customer?.loyaltyPoints ?? 0),
+    dietaryNotes: customer?.dietaryNotes ?? "",
+    street: customer?.address?.street ?? "",
+    city: customer?.address?.city ?? "",
+    zip: customer?.address?.zip ?? "",
+  });
   const [saving, setSaving] = useState(false);
 
   const isEdit = customer !== null;
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
   const handleSave = async () => {
-    if (!firstName.trim() || !lastName.trim()) return;
+    if (!formData.firstName.trim() || !formData.lastName.trim()) return;
     setSaving(true);
     try {
       await onSave({
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        phone: phone.trim(),
-        email: email.trim(),
-        loyaltyPoints: parseInt(loyaltyPoints, 10) || 0,
-        dietaryNotes: dietaryNotes.trim(),
-        address: { street: street.trim(), city: city.trim(), state: 'NJ', zip: zip.trim() },
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        phone: formData.phone.trim(),
+        email: formData.email.trim(),
+        loyaltyPoints: parseInt(formData.loyaltyPoints, 10) || 0,
+        dietaryNotes: formData.dietaryNotes.trim(),
+        address: {
+          street: formData.street.trim(),
+          city: formData.city.trim(),
+          state: "NJ",
+          zip: formData.zip.trim(),
+        },
       });
     } finally {
       setSaving(false);
@@ -53,7 +68,7 @@ export default function CustomerEditModal({ customer, onClose, onSave }: Props) 
     <div className="edit-modal-backdrop" onClick={onClose}>
       <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
         <div className="edit-modal-head">
-          <h2>{isEdit ? 'Edit customer' : 'Add customer'}</h2>
+          <h2>{isEdit ? "Edit customer" : "Add customer"}</h2>
           <button className="modal-close-btn" onClick={onClose}>
             <X size={16} strokeWidth={2} />
           </button>
@@ -61,51 +76,68 @@ export default function CustomerEditModal({ customer, onClose, onSave }: Props) 
 
         <div className="edit-modal-row">
           <input
+            name="firstName"
             placeholder="First name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            value={formData.firstName}
+            onChange={handleChange}
           />
           <input
+            name="lastName"
             placeholder="Last name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
+            value={formData.lastName}
+            onChange={handleChange}
           />
         </div>
 
         <input
+          name="email"
           placeholder="Email"
           type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={formData.email}
+          onChange={handleChange}
         />
         <input
+          name="phone"
           placeholder="Phone"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          value={formData.phone}
+          onChange={handleChange}
         />
 
         <div className="edit-modal-row">
           <input
+            name="loyaltyPoints"
             placeholder="Loyalty points"
             type="number"
-            value={loyaltyPoints}
-            onChange={(e) => setLoyaltyPoints(e.target.value)}
+            value={formData.loyaltyPoints}
+            onChange={handleChange}
           />
           <input
+            name="dietaryNotes"
             placeholder="Dietary notes"
-            value={dietaryNotes}
-            onChange={(e) => setDietaryNotes(e.target.value)}
+            value={formData.dietaryNotes}
+            onChange={handleChange}
           />
         </div>
 
         <input
+          name="street"
           placeholder="Street address"
-          value={street}
-          onChange={(e) => setStreet(e.target.value)}
+          value={formData.street}
+          onChange={handleChange}
         />
         <div className="edit-modal-row">
-          <input placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} />
-          <input placeholder="Zip" value={zip} onChange={(e) => setZip(e.target.value)} />
+          <input
+            name="city"
+            placeholder="City"
+            value={formData.city}
+            onChange={handleChange}
+          />
+          <input
+            name="zip"
+            placeholder="Zip"
+            value={formData.zip}
+            onChange={handleChange}
+          />
         </div>
 
         <div className="edit-modal-actions">
@@ -114,10 +146,12 @@ export default function CustomerEditModal({ customer, onClose, onSave }: Props) 
           </button>
           <button
             className="btn-primary"
-            disabled={saving || !firstName.trim() || !lastName.trim()}
+            disabled={
+              saving || !formData.firstName.trim() || !formData.lastName.trim()
+            }
             onClick={handleSave}
           >
-            {saving ? 'Saving…' : isEdit ? 'Save changes' : 'Add customer'}
+            {saving ? "Saving…" : isEdit ? "Save changes" : "Add customer"}
           </button>
         </div>
       </div>
