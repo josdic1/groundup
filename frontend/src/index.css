@@ -5667,3 +5667,150 @@ button:focus-visible,
     display: none !important;
   }
 }
+
+
+/* =========================================
+   Final polished Admin dropdown
+   ========================================= */
+
+.top-nav-admin,
+.admin-menu,
+.admin-dropdown,
+.top-nav-dropdown {
+  position: relative;
+}
+
+.top-nav-admin-menu,
+.admin-menu-content,
+.admin-dropdown-menu,
+.top-nav-dropdown-menu {
+  position: absolute !important;
+  top: calc(100% + 8px) !important;
+  right: 0 !important;
+  z-index: 500 !important;
+  min-width: 230px !important;
+  overflow: hidden !important;
+  padding: 8px !important;
+  border: 1px solid rgba(255, 252, 246, 0.12) !important;
+  border-radius: 16px !important;
+  background: rgba(28, 20, 16, 0.96) !important;
+  color: rgba(255, 252, 246, 0.92) !important;
+  box-shadow: 0 22px 52px rgba(0, 0, 0, 0.34) !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+.top-nav-admin-menu button,
+.admin-menu-content button,
+.admin-dropdown-menu button,
+.top-nav-dropdown-menu button {
+  display: flex !important;
+  width: 100% !important;
+  min-height: 40px !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 9px !important;
+  padding: 0 12px !important;
+  border: 0 !important;
+  border-radius: 11px !important;
+  background: transparent !important;
+  color: rgba(255, 252, 246, 0.82) !important;
+  font: inherit !important;
+  font-size: 13px !important;
+  font-weight: 850 !important;
+  letter-spacing: -0.01em !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  appearance: none !important;
+}
+
+.top-nav-admin-menu button:hover,
+.admin-menu-content button:hover,
+.admin-dropdown-menu button:hover,
+.top-nav-dropdown-menu button:hover {
+  background: rgba(255, 252, 246, 0.08) !important;
+  color: white !important;
+}
+
+.top-nav-admin-menu button:first-child,
+.admin-menu-content button:first-child,
+.admin-dropdown-menu button:first-child,
+.top-nav-dropdown-menu button:first-child {
+  color: white !important;
+  background: rgba(162, 59, 46, 0.26) !important;
+}
+
+.top-nav-admin-menu button + button,
+.admin-menu-content button + button,
+.admin-dropdown-menu button + button,
+.top-nav-dropdown-menu button + button {
+  margin-top: 4px !important;
+}
+
+.top-nav-admin-menu button:last-child,
+.admin-menu-content button:last-child,
+.admin-dropdown-menu button:last-child,
+.top-nav-dropdown-menu button:last-child {
+  color: rgba(255, 226, 220, 0.92) !important;
+}
+
+.top-nav-admin-menu button:last-child:hover,
+.admin-menu-content button:last-child:hover,
+.admin-dropdown-menu button:last-child:hover,
+.top-nav-dropdown-menu button:last-child:hover {
+  background: rgba(162, 59, 46, 0.2) !important;
+  color: white !important;
+}
+
+
+/* =========================================
+   Keep counter resize divider behind modals
+   ========================================= */
+
+.mkb-resize-handle {
+  z-index: 25 !important;
+}
+
+.mkb-resize-hint {
+  z-index: 26 !important;
+}
+
+/* Any app modal should beat the counter divider */
+.modal-backdrop,
+.item-modal-backdrop,
+.counter-modal-backdrop,
+.order-modal-backdrop,
+.menu-item-modal-backdrop {
+  z-index: 900 !important;
+}
+
+.modal,
+.item-modal,
+.counter-modal,
+.order-modal,
+.menu-item-modal {
+  z-index: 901 !important;
+}
+
+
+/* =========================================
+   Counter modals above resize divider
+   ========================================= */
+
+.mkb-resize-handle {
+  z-index: 20 !important;
+}
+
+.mkb-resize-hint {
+  z-index: 21 !important;
+}
+
+.amount-modal-backdrop,
+.history-modal-backdrop {
+  z-index: 1000 !important;
+}
+
+.amount-modal,
+.history-modal {
+  position: relative !important;
+  z-index: 1001 !important;
+}
