@@ -99,16 +99,19 @@ export default function TopNav() {
 
           {adminOpen && (
             <div className="admin-dropdown" role="menu">
-                            <button
+              <button
+                className="admin-dropdown-item admin-dropdown-primary"
                 type="button"
-                onClick={() => {
+                onMouseDown={(event) => {
+                  event.preventDefault();
                   window.dispatchEvent(new Event('groundup:start-tutorial'));
+                  setAdminOpen(false);
                 }}
               >
                 Start walkthrough
               </button>
 
-<button
+              <button
                 className="admin-dropdown-item"
                 type="button"
                 disabled={working}
@@ -121,7 +124,7 @@ export default function TopNav() {
               </button>
 
               <button
-                className="admin-dropdown-item"
+                className="admin-dropdown-item admin-dropdown-danger"
                 type="button"
                 disabled={working}
                 onMouseDown={(event) => {
