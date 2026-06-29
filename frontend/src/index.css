@@ -5274,3 +5274,14 @@ button:focus-visible,
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+
+/* Live-page walkthrough backdrop */
+.tutorial-modal-backdrop {
+  background: rgba(28, 20, 16, 0.26) !important;
+  backdrop-filter: blur(2px) !important;
+}
+
+.tutorial-modal-visual {
+  box-shadow: 0 32px 90px rgba(15, 10, 6, 0.34) !important;
+}

@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   ArrowRight,
   CheckCircle2,
@@ -17,6 +18,7 @@ type TourStep = {
   title: string;
   body: string;
   preview: 'register' | 'orders' | 'online' | 'customers' | 'reports' | 'mobile';
+  path: string;
 };
 
 const TOUR_STEPS: TourStep[] = [
@@ -25,30 +27,35 @@ const TOUR_STEPS: TourStep[] = [
     title: 'Register + live stream',
     body: 'Build an in-store order on the left. Watch orders appear and move through the live stream on the right.',
     preview: 'register',
+    path: '/',
   },
   {
     icon: Globe,
     title: 'Online customer ordering',
     body: 'Choose a sample customer, add items to a cart, and place a pickup or delivery order.',
     preview: 'online',
+    path: '/online',
   },
   {
     icon: ClipboardList,
     title: 'Orders dashboard',
     body: 'Filter, search, and review order status across counter and online orders.',
     preview: 'orders',
+    path: '/orders',
   },
   {
     icon: Users,
     title: 'Customer desk',
     body: 'Find customers, review history, edit contact info, and start orders from a profile.',
     preview: 'customers',
+    path: '/customers',
   },
   {
     icon: LayoutDashboard,
     title: 'Mobile admin view',
     body: 'On mobile, the app becomes a compact admin dashboard instead of a split counter screen.',
     preview: 'mobile',
+    path: '/',
   },
 ];
 
@@ -269,6 +276,9 @@ function TourPreview({ type }: { type: TourStep['preview'] }) {
 }
 
 export default function TutorialToast() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [visible, setVisible] = useState(false);
   const [tourOpen, setTourOpen] = useState(false);
   const [step, setStep] = useState(0);
@@ -288,10 +298,19 @@ export default function TutorialToast() {
     };
   }, []);
 
+  const goToTourStep = (nextStep: number) => {
+    setStep(nextStep);
+
+    const nextPath = TOUR_STEPS[nextStep]?.path;
+    if (nextPath && location.pathname !== nextPath) {
+      navigate(nextPath);
+    }
+  };
+
   const openTour = () => {
     setVisible(false);
-    setStep(0);
     setTourOpen(true);
+    goToTourStep(0);
   };
 
   const closeTour = () => {
@@ -362,7 +381,7 @@ export default function TutorialToast() {
                       type="button"
                       className={index === step ? 'active' : ''}
                       aria-label={`Go to step ${index + 1}`}
-                      onClick={() => setStep(index)}
+                      onClick={() => goToTourStep(index)}
                     />
                   ))}
                 </div>
@@ -381,7 +400,7 @@ export default function TutorialToast() {
                         return;
                       }
 
-                      setStep((value) => value + 1);
+                      goToTourStep(step + 1);
                     }}
                   >
                     {isLastStep ? (
