@@ -52,6 +52,12 @@ app.get("/api/staff", (_req, res) => {
   res.json(STAFF.filter((staff) => staff.isActive));
 });
 
+// ----- Menu tiers -----
+
+app.get("/api/menu-tiers", (_req, res) => {
+  res.json(MENU_TIERS);
+});
+
 // ----- Orders -----
 
 app.get("/api/orders", (req, res) => {

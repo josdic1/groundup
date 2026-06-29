@@ -28,8 +28,8 @@ import type {
   Order,
   CustomerWithStats,
 } from '@groundup/shared-types';
-import { MENU_TIERS } from '../../data/menuTiers';
 import { createOnlineOrder } from '../../api/online-orders';
+import { fetchMenuTiers } from '../../api/menu-tiers';
 import { fetchCustomerOrders } from '../../api/orders';
 import { updateCustomer, deleteCustomer } from '../../api/customers';
 import { useMenu } from '../../hooks/useMenu';
@@ -43,10 +43,6 @@ const CATEGORY_META: Record<string, { label: string; icon: typeof Beef }> = {
   'Prepared Deli, Provisions & Shabbos Takeout': { label: 'Deli', icon: Sandwich },
   Beverages: { label: 'Drinks', icon: CupSoda },
 };
-
-const tiersByItemId = new Map<string, SizeTier[]>(
-  MENU_TIERS.map((t: MenuItemTiers) => [t.menuItemId, t.tiers])
-);
 
 type Step = 'browse' | 'checkout' | 'confirmed';
 
@@ -64,6 +60,7 @@ export default function OnlineOrder() {
   const [step, setStep] = useState<Step>('browse');
   const [activeCategory, setActiveCategory] = useState('');
   const [cart, setCart] = useState<OrderLineItem[]>([]);
+  const [menuTiers, setMenuTiers] = useState<MenuItemTiers[]>([]);
   const [pendingItem, setPendingItem] = useState<MenuItem | null>(null);
   const [selectedTier, setSelectedTier] = useState<SizeTier | null>(null);
   const [itemNoteInput, setItemNoteInput] = useState('');
@@ -98,6 +95,12 @@ export default function OnlineOrder() {
 
   const categories = useMemo(() => Array.from(new Set(menu.map((m) => m.category))), [menu]);
 
+  const tiersByItemId = useMemo(() => {
+    return new Map<string, SizeTier[]>(
+      menuTiers.map((tierGroup) => [tierGroup.menuItemId, tierGroup.tiers])
+    );
+  }, [menuTiers]);
+
   const sampleCustomers = useMemo(() => {
     return [...customers]
       .filter((customer) => !deletedCustomerIds.has(customer.customerId))
@@ -107,6 +110,10 @@ export default function OnlineOrder() {
       return aName.localeCompare(bName);
     });
   }, [customers, deletedCustomerIds]);
+
+  useEffect(() => {
+    fetchMenuTiers().then(setMenuTiers).catch(console.error);
+  }, []);
 
   useEffect(() => {
     if (!activeCategory && categories.length > 0) {

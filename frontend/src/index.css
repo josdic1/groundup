@@ -3919,3 +3919,55 @@ button:focus-visible,
 .top-nav-brand-button:hover {
   opacity: 0.86;
 }
+
+
+/* Top nav brand hard-refresh home link */
+.top-nav-brand {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  color: rgba(255, 252, 246, 0.95);
+  font-size: 13px;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.top-nav-brand:hover {
+  color: #ffffff;
+  opacity: 0.9;
+}
+
+
+/* =========================================
+   Stream pane faint watermark
+   ========================================= */
+
+.mkb-stream-pane {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.mkb-stream-pane::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("/script-black.png");
+  background-repeat: no-repeat;
+  background-position: center 48%;
+  background-size: min(360px, 46%);
+  opacity: 0.026;
+  filter: grayscale(1) contrast(0.85);
+  transform: rotate(-2deg);
+}
+
+.mkb-stream-pane > * {
+  position: relative;
+  z-index: 1;
+}

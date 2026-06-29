@@ -48,14 +48,9 @@ export default function TopNav() {
 
   return (
     <header className="top-nav">
-      <button
-        type="button"
-        className="top-nav-brand top-nav-brand-button"
-        onClick={() => window.location.reload()}
-        title="Refresh current page"
-      >
+      <a href="/" className="top-nav-brand">
         {STORE_CONFIG.name}
-      </button>
+      </a>
 
       <nav className="top-nav-links" aria-label="Main navigation">
         <NavLink to="/" className={navClass}>
