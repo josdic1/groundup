@@ -3105,3 +3105,93 @@ button:focus-visible,
     padding: 22px;
   }
 }
+
+
+/* =========================================
+   Source: features/orders/OrdersPage.css
+   Updated clickable order filter pills
+   ========================================= */
+
+.orders-controls-pills {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.orders-search-wide {
+  max-width: none;
+}
+
+.orders-filter-group {
+  display: grid;
+  gap: 7px;
+}
+
+.orders-filter-label {
+  color: rgba(28, 20, 16, 0.52);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.orders-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.orders-filter-pill {
+  min-height: 34px;
+  padding: 8px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: rgba(250, 246, 238, 0.72);
+  color: rgba(28, 20, 16, 0.66);
+  font-size: 12px;
+  font-weight: 850;
+  line-height: 1;
+  transition:
+    transform 0.1s ease,
+    border-color 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.orders-filter-pill:hover {
+  transform: translateY(-1px);
+  border-color: rgba(28, 20, 16, 0.32);
+  color: var(--ink);
+  background: var(--paper);
+}
+
+.orders-filter-pill.active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: 0 5px 14px rgba(28, 20, 16, 0.16);
+}
+
+.orders-filter-pill.active:hover {
+  color: var(--paper);
+  background: var(--ink);
+}
+
+@media (min-width: 980px) {
+  .orders-controls-pills {
+    grid-template-columns: 1.35fr 1fr;
+    align-items: start;
+  }
+
+  .orders-search-wide {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 700px) {
+  .orders-filter-pill {
+    flex: 1;
+    min-width: 92px;
+  }
+}

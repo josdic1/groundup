@@ -20,6 +20,11 @@ type FulfillmentFilter = 'all' | Order['fulfillment'];
 type DateFilter = 'all' | 'today' | 'last7' | 'last30';
 type SortKey = 'newest' | 'oldest' | 'totalHigh' | 'totalLow' | 'customer' | 'status';
 
+type PillOption<T extends string> = {
+  value: T;
+  label: string;
+};
+
 const STATUS_LABEL: Record<Order['status'], string> = {
   placed: 'Placed',
   in_prep: 'In prep',
@@ -38,6 +43,44 @@ const FULFILLMENT_LABEL: Record<Order['fulfillment'], string> = {
   pickup: 'Pickup',
   delivery: 'Delivery',
 };
+
+const STATUS_OPTIONS: PillOption<StatusFilter>[] = [
+  { value: 'all', label: 'All' },
+  { value: 'placed', label: 'Placed' },
+  { value: 'in_prep', label: 'Prep' },
+  { value: 'ready', label: 'Ready' },
+  { value: 'completed', label: 'Done' },
+  { value: 'cancelled', label: 'Cancelled' },
+];
+
+const SOURCE_OPTIONS: PillOption<SourceFilter>[] = [
+  { value: 'all', label: 'All' },
+  { value: 'counter', label: 'Counter' },
+  { value: 'online', label: 'Online' },
+];
+
+const FULFILLMENT_OPTIONS: PillOption<FulfillmentFilter>[] = [
+  { value: 'all', label: 'All' },
+  { value: 'in_store', label: 'In-store' },
+  { value: 'pickup', label: 'Pickup' },
+  { value: 'delivery', label: 'Delivery' },
+];
+
+const DATE_OPTIONS: PillOption<DateFilter>[] = [
+  { value: 'all', label: 'All time' },
+  { value: 'today', label: 'Today' },
+  { value: 'last7', label: '7 days' },
+  { value: 'last30', label: '30 days' },
+];
+
+const SORT_OPTIONS: PillOption<SortKey>[] = [
+  { value: 'newest', label: 'Newest' },
+  { value: 'oldest', label: 'Oldest' },
+  { value: 'totalHigh', label: 'Biggest' },
+  { value: 'totalLow', label: 'Smallest' },
+  { value: 'customer', label: 'Customer' },
+  { value: 'status', label: 'Status' },
+];
 
 function formatDate(ts: number): string {
   return new Date(ts).toLocaleDateString(undefined, {
@@ -139,6 +182,36 @@ function getFocusCopy(params: {
     icon: ClipboardList,
     tone: 'ink',
   };
+}
+
+function FilterPills<T extends string>({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: T;
+  options: PillOption<T>[];
+  onChange: (value: T) => void;
+}) {
+  return (
+    <div className="orders-filter-group">
+      <span className="orders-filter-label">{label}</span>
+      <div className="orders-pill-row">
+        {options.map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            className={`orders-filter-pill ${value === option.value ? 'active' : ''}`}
+            onClick={() => onChange(option.value)}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default function OrdersPage() {
@@ -278,8 +351,8 @@ export default function OrdersPage() {
         </div>
       </div>
 
-      <section className="orders-controls panel">
-        <div className="orders-search">
+      <section className="orders-controls panel orders-controls-pills">
+        <div className="orders-search orders-search-wide">
           <Search size={16} strokeWidth={2} />
           <input
             value={query}
@@ -288,61 +361,40 @@ export default function OrdersPage() {
           />
         </div>
 
-        <label>
-          Status
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}>
-            <option value="all">All</option>
-            <option value="placed">Placed</option>
-            <option value="in_prep">In prep</option>
-            <option value="ready">Ready</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-        </label>
+        <FilterPills
+          label="Status"
+          value={statusFilter}
+          options={STATUS_OPTIONS}
+          onChange={setStatusFilter}
+        />
 
-        <label>
-          Source
-          <select value={sourceFilter} onChange={(e) => setSourceFilter(e.target.value as SourceFilter)}>
-            <option value="all">All</option>
-            <option value="counter">Counter</option>
-            <option value="online">Online</option>
-          </select>
-        </label>
+        <FilterPills
+          label="Source"
+          value={sourceFilter}
+          options={SOURCE_OPTIONS}
+          onChange={setSourceFilter}
+        />
 
-        <label>
-          Fulfillment
-          <select
-            value={fulfillmentFilter}
-            onChange={(e) => setFulfillmentFilter(e.target.value as FulfillmentFilter)}
-          >
-            <option value="all">All</option>
-            <option value="in_store">In-store</option>
-            <option value="pickup">Pickup</option>
-            <option value="delivery">Delivery</option>
-          </select>
-        </label>
+        <FilterPills
+          label="Fulfillment"
+          value={fulfillmentFilter}
+          options={FULFILLMENT_OPTIONS}
+          onChange={setFulfillmentFilter}
+        />
 
-        <label>
-          Date
-          <select value={dateFilter} onChange={(e) => setDateFilter(e.target.value as DateFilter)}>
-            <option value="all">All time</option>
-            <option value="today">Today</option>
-            <option value="last7">Last 7 days</option>
-            <option value="last30">Last 30 days</option>
-          </select>
-        </label>
+        <FilterPills
+          label="Date"
+          value={dateFilter}
+          options={DATE_OPTIONS}
+          onChange={setDateFilter}
+        />
 
-        <label>
-          Sort
-          <select value={sort} onChange={(e) => setSort(e.target.value as SortKey)}>
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
-            <option value="totalHigh">Total high</option>
-            <option value="totalLow">Total low</option>
-            <option value="customer">Customer</option>
-            <option value="status">Status</option>
-          </select>
-        </label>
+        <FilterPills
+          label="Sort"
+          value={sort}
+          options={SORT_OPTIONS}
+          onChange={setSort}
+        />
       </section>
 
       <section className="orders-table-card panel">
@@ -361,7 +413,7 @@ export default function OrdersPage() {
 
           <div className="orders-sort-chip">
             <ArrowDownUp size={13} strokeWidth={2} />
-            {sort}
+            {SORT_OPTIONS.find((option) => option.value === sort)?.label ?? sort}
           </div>
         </div>
 
