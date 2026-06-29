@@ -36,11 +36,9 @@ const SHORT_CATEGORY: Record<string, string> = {
 const CATEGORY_COLORS = ['#a23b2e', '#5c6b47', '#d4a24c', '#6b5a8e'];
 
 type RevenueBarClick = {
-  activePayload?: Array<{
-    payload?: {
-      date?: string;
-    };
-  }>;
+  payload?: {
+    date?: string;
+  };
 };
 
 function shortCategory(name: string): string {
@@ -85,8 +83,8 @@ export default function Dashboard() {
 
   const handlePrint = () => window.print();
 
-  const handleRevenueDayClick = (state: RevenueBarClick) => {
-    const date = state.activePayload?.[0]?.payload?.date;
+  const handleRevenueDayClick = (bar: RevenueBarClick) => {
+    const date = bar.payload?.date;
     if (date) setSelectedRevenueDay(date);
   };
 
@@ -159,7 +157,7 @@ export default function Dashboard() {
             <span>Click a bar for daily sales</span>
           </div>
           <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={stats.revenueByDay} onClick={(state) => handleRevenueDayClick(state as RevenueBarClick)}>
+            <BarChart data={stats.revenueByDay}>
               <CartesianGrid
                 strokeDasharray="3 3"
                 stroke="rgba(28,20,16,0.08)"
@@ -187,6 +185,7 @@ export default function Dashboard() {
                 fill="#a23b2e"
                 radius={[3, 3, 0, 0]}
                 className="clickable-revenue-bar"
+                onClick={(bar: unknown) => handleRevenueDayClick(bar as RevenueBarClick)}
               />
             </BarChart>
           </ResponsiveContainer>
