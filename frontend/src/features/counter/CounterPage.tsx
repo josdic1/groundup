@@ -3,7 +3,9 @@ import { useLocation } from 'react-router-dom';
 import type { Order } from '@groundup/shared-types';
 import CounterScreen from './components/CounterScreen';
 import OrderStream from './components/OrderStream';
+import MobileAdminDashboard from './components/MobileAdminDashboard';
 import { deleteOrder } from '../../api/orders';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 type StartOrderState = {
   startOrderForCustomerId?: string;
@@ -15,6 +17,8 @@ const DEFAULT_COUNTER_PERCENT = 52;
 const STORAGE_KEY = 'groundup-counter-width';
 
 export default function MainPage() {
+  const isMobile = useIsMobile();
+
   const [refreshSignal, setRefreshSignal] = useState(0);
   const [recalledOrder, setRecalledOrder] = useState<Order | null>(null);
   const [counterWidth, setCounterWidth] = useState(() => {
@@ -93,6 +97,10 @@ export default function MainPage() {
     setCounterWidth(DEFAULT_COUNTER_PERCENT);
     localStorage.setItem(STORAGE_KEY, String(DEFAULT_COUNTER_PERCENT));
   };
+
+  if (isMobile) {
+    return <MobileAdminDashboard />;
+  }
 
   return (
     <div

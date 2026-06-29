@@ -4278,3 +4278,271 @@ button:focus-visible,
     min-height: 360px !important;
   }
 }
+
+
+/* =========================================
+   Mobile-only admin dashboard
+   ========================================= */
+
+.mobile-admin-dashboard {
+  min-height: calc(100vh - 44px);
+  padding: 18px 14px 32px;
+  background:
+    radial-gradient(circle at top right, rgba(162, 59, 46, 0.08), transparent 34%),
+    var(--paper-dim);
+}
+
+.mobile-admin-hero {
+  margin-bottom: 14px;
+}
+
+.mobile-admin-hero span {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--rare);
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.mobile-admin-hero h1 {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 950;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+.mobile-admin-hero p {
+  margin: 10px 0 12px;
+  color: rgba(28, 20, 16, 0.6);
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.4;
+}
+
+.mobile-admin-hero button,
+.mobile-admin-actions button,
+.mobile-admin-links button,
+.mobile-admin-orders button {
+  border: 1.5px solid rgba(28, 20, 16, 0.11);
+  border-radius: 15px;
+  background: rgba(255, 252, 246, 0.78);
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.mobile-admin-hero button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.mobile-admin-main-card {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 10px;
+  padding: 18px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, rgba(28, 20, 16, 0.96), rgba(55, 35, 24, 0.94));
+  color: white;
+  box-shadow: 0 18px 42px rgba(28, 20, 16, 0.16);
+}
+
+.mobile-admin-main-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.mobile-admin-main-top span,
+.mobile-admin-status-grid span {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mobile-admin-main-top strong {
+  color: white;
+  font-size: 48px;
+  font-weight: 950;
+  letter-spacing: -0.06em;
+  line-height: 1;
+}
+
+.mobile-admin-status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.mobile-admin-status-grid button {
+  display: grid;
+  gap: 4px;
+  min-height: 70px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  text-align: left;
+}
+
+.mobile-admin-status-grid strong {
+  color: white;
+  font-size: 25px;
+  font-weight: 950;
+}
+
+.mobile-admin-kpis {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 9px;
+  margin-bottom: 12px;
+}
+
+.mobile-admin-kpis div {
+  display: grid;
+  gap: 7px;
+  min-height: 86px;
+  padding: 14px;
+  border: 1.5px solid rgba(28, 20, 16, 0.1);
+  border-radius: 18px;
+  background: rgba(255, 252, 246, 0.74);
+}
+
+.mobile-admin-kpis span {
+  color: rgba(28, 20, 16, 0.48);
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mobile-admin-kpis strong {
+  color: var(--ink);
+  font-size: 23px;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+.mobile-admin-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  margin-bottom: 18px;
+}
+
+.mobile-admin-actions button,
+.mobile-admin-links button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 13px;
+  font-size: 13px;
+  text-align: left;
+}
+
+.mobile-admin-actions button:first-child {
+  border-color: rgba(162, 59, 46, 0.24);
+  background: rgba(162, 59, 46, 0.09);
+  color: var(--rare);
+}
+
+.mobile-admin-section {
+  margin-top: 16px;
+}
+
+.mobile-admin-section h2 {
+  margin: 0 0 9px;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 950;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+}
+
+.mobile-admin-links {
+  display: grid;
+  gap: 8px;
+}
+
+.mobile-admin-links button {
+  min-height: 62px;
+}
+
+.mobile-admin-links button span {
+  display: grid;
+  gap: 2px;
+}
+
+.mobile-admin-links strong {
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.mobile-admin-links small {
+  color: rgba(28, 20, 16, 0.5);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.mobile-admin-orders {
+  display: grid;
+  gap: 8px;
+}
+
+.mobile-admin-orders p {
+  margin: 0;
+  padding: 18px;
+  border: 1.5px dashed rgba(28, 20, 16, 0.12);
+  border-radius: 16px;
+  color: rgba(28, 20, 16, 0.48);
+  font-size: 13px;
+  font-style: italic;
+  font-weight: 750;
+}
+
+.mobile-admin-orders button {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 13px;
+  text-align: left;
+}
+
+.mobile-admin-orders button > span {
+  width: fit-content;
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(162, 59, 46, 0.1);
+  color: var(--rare);
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.mobile-admin-orders strong {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.mobile-admin-orders small {
+  color: rgba(28, 20, 16, 0.5);
+  font-size: 11px;
+  font-weight: 750;
+}
