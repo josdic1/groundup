@@ -6,6 +6,7 @@ import OnlineOrder from '../features/online-order/OnlineOrderPage';
 import Dashboard from '../features/dashboard/DashboardPage';
 import CustomersPage from '../features/customers/CustomersPage';
 import MenuPage from '../features/menu/MenuPage';
+import OrdersPage from '../features/orders/OrdersPage';
 import Toast from '../components/ui/Toast';
 import { MenuProvider } from '../providers/MenuProvider';
 import './App.shell.css';
@@ -15,6 +16,7 @@ function App() {
 
   useEffect(() => {
     const pending = sessionStorage.getItem('mkb-toast');
+
     if (pending) {
       setToastMessage(pending);
       sessionStorage.removeItem('mkb-toast');
@@ -30,7 +32,9 @@ function App() {
             <Routes>
               <Route path="/" element={<MainPage />} />
               <Route path="/online" element={<OnlineOrder />} />
+              <Route path="/orders" element={<OrdersPage />} />
               <Route path="/menu" element={<MenuPage />} />
+              <Route path="/reports" element={<Dashboard />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/customers" element={<CustomersPage />} />
             </Routes>

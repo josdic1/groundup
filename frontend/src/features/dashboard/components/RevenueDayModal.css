@@ -1,0 +1,115 @@
+.revenue-day-modal {
+  padding: 26px;
+}
+
+.revenue-day-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.revenue-day-summary .kpi-value {
+  font-size: 24px;
+}
+
+.revenue-day-note {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: rgba(28, 20, 16, 0.58);
+}
+
+.revenue-day-table-wrap {
+  max-height: 420px;
+  overflow: auto;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+}
+
+.revenue-day-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.revenue-day-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--paper-dim);
+  color: rgba(28, 20, 16, 0.64);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.revenue-day-table th,
+.revenue-day-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.revenue-day-table tbody tr:hover {
+  background: rgba(162, 59, 46, 0.045);
+}
+
+.revenue-day-order-id {
+  display: block;
+  margin-top: 3px;
+  font-size: 11px;
+  color: rgba(28, 20, 16, 0.42);
+}
+
+.revenue-day-items {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-width: 320px;
+}
+
+.table-pill {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 5px 5px 0;
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(28, 20, 16, 0.08);
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.muted-pill {
+  color: rgba(28, 20, 16, 0.58);
+}
+
+.status-pill {
+  background: rgba(162, 59, 46, 0.1);
+  color: var(--rare);
+}
+
+.align-right {
+  text-align: right;
+}
+
+.revenue-day-empty {
+  padding: 32px !important;
+  text-align: center;
+  color: rgba(28, 20, 16, 0.48);
+}
+
+@media (max-width: 800px) {
+  .revenue-day-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .revenue-day-table {
+    min-width: 760px;
+  }
+}

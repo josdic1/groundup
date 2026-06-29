@@ -1,5 +1,11 @@
 export type SoldBy = "weight" | "each";
 
+export type SizeTier = {
+  label: string;
+  weightLbs: number | null;
+  price: number;
+};
+
 export type MenuItem = {
   id: string;
   name: string;
@@ -8,6 +14,7 @@ export type MenuItem = {
   unit: string;
   soldBy: SoldBy;
   isActive: boolean;
+  tiers?: SizeTier[];
 };
 
 export type Address = {
@@ -42,12 +49,6 @@ export type OrderStatus =
   | "cancelled";
 export type OrderSource = "counter" | "online";
 export type FulfillmentType = "in_store" | "pickup" | "delivery";
-
-export type SizeTier = {
-  label: string;
-  weightLbs: number | null;
-  price: number;
-};
 
 export type MenuItemTiers = {
   menuItemId: string;

@@ -1,12 +1,11 @@
 import { useState, useMemo } from 'react';
 import { Beef, Bird, Drumstick, Flame, Sandwich, CupSoda, Store, Truck, ShoppingCart, Check, History } from 'lucide-react';
-import type { MenuItem, OrderLineItem, SizeTier, Address, Order, CustomerWithStats } from '@groundup/shared-types';
+import type { MenuItem, OrderLineItem, SizeTier, MenuItemTiers, Address, Order, CustomerWithStats } from '@groundup/shared-types';
 import { MENU_TIERS } from '../../data/menuTiers';
 import { createOnlineOrder } from '../../api/online-orders';
 import { fetchCustomerOrders } from '../../api/orders';
 import { useMenu } from '../../hooks/useMenu';
 import { useCustomers } from '../../hooks/useCustomers';
-import './OnlineOrderPage.css';
 
 const CATEGORY_META: Record<string, { label: string; icon: typeof Beef }> = {
   'Glatt Kosher Beef (Fresh Cuts)': { label: 'Beef', icon: Beef },
@@ -17,7 +16,7 @@ const CATEGORY_META: Record<string, { label: string; icon: typeof Beef }> = {
   Beverages: { label: 'Drinks', icon: CupSoda },
 };
 
-const tiersByItemId = new Map(MENU_TIERS.map((t) => [t.menuItemId, t.tiers]));
+const tiersByItemId = new Map<string, SizeTier[]>(MENU_TIERS.map((t: MenuItemTiers) => [t.menuItemId, t.tiers]));
 
 type Step = 'browse' | 'checkout' | 'confirmed';
 

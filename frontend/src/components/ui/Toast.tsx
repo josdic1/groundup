@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { CheckCircle2 } from 'lucide-react';
-import './Toast.css';
 
 type Props = {
   message: string;

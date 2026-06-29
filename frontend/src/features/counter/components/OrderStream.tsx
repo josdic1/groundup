@@ -3,7 +3,6 @@ import { X, Undo2, Store, Truck, RotateCcw } from 'lucide-react';
 import type { Order, OrderStatus } from '@groundup/shared-types';
 import { fetchOrders, updateOrder } from '../../../api/orders';
 import { STORE_CONFIG } from '../../../config';
-import './OrderStream.css';
 
 const COLUMNS: { status: OrderStatus; label: string }[] = [
   { status: 'placed', label: 'Placed' },

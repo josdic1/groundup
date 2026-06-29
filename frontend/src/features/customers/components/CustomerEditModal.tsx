@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import type { CustomerWithStats, Address } from "@groundup/shared-types";
-import "./CustomerEditModal.css";
 
 type Props = {
   customer: CustomerWithStats | null;

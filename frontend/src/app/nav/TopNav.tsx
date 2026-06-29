@@ -3,7 +3,6 @@ import { NavLink } from 'react-router-dom';
 import { LayoutGrid, Globe, BarChart3, Users, Settings, ChevronDown, LayoutList } from 'lucide-react';
 import { STORE_CONFIG } from '../../config';
 import { resetToEmpty, resetToDemoData } from '../../api/demo';
-import './TopNav.css';
 
 export default function TopNav() {
   const [adminOpen, setAdminOpen] = useState(false);

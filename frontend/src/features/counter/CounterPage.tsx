@@ -4,7 +4,6 @@ import type { Order } from '@groundup/shared-types';
 import CounterScreen from './components/CounterScreen';
 import OrderStream from './components/OrderStream';
 import { deleteOrder } from '../../api/orders';
-import '../../app/App.layout.css';
 
 type StartOrderState = {
   startOrderForCustomerId?: string;

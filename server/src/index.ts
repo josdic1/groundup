@@ -12,6 +12,7 @@ import type {
 import { CUSTOMERS } from "./data/customers.js";
 import { HISTORICAL_ORDERS } from "./data/historicalOrders.js";
 import { MENU } from "./data/menu.js";
+import { MENU_TIERS } from "./data/menuTiers.js";
 
 const app = express();
 app.use(cors());
@@ -119,11 +120,9 @@ app.delete("/api/orders/:id", (req, res) => {
     return res.status(404).json({ error: "Order not found" });
   }
   if (order.status !== "placed") {
-    return res
-      .status(400)
-      .json({
-        error: "Only unclaimed orders can be sent back to the register",
-      });
+    return res.status(400).json({
+      error: "Only unclaimed orders can be sent back to the register",
+    });
   }
   orders = orders.filter((o) => o.id !== id);
   res.json({ ok: true });
@@ -137,6 +136,17 @@ app.get("/api/menu", (req, res) => {
 
 app.get("/api/menu/admin", (req, res) => {
   res.json(menu);
+});
+
+app.get("/api/menu", (req, res) => {
+  const activeMenu = menu.filter((item) => item.isActive);
+
+  const enrichedMenu = activeMenu.map((item) => {
+    const tiers = MENU_TIERS.find((t) => t.menuItemId === item.id)?.tiers || [];
+    return { ...item, tiers };
+  });
+
+  res.json(enrichedMenu);
 });
 
 app.patch("/api/menu/:id", (req, res) => {

@@ -1,0 +1,352 @@
+.orders-page {
+  height: 100%;
+  overflow: auto;
+  padding: 28px 24px;
+  background:
+    radial-gradient(circle at top right, rgba(212, 162, 76, 0.16), transparent 32%),
+    var(--paper-dim);
+}
+
+.orders-header {
+  margin-bottom: 18px;
+}
+
+.orders-hero {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 22px;
+  min-height: 170px;
+  margin-bottom: 16px;
+  padding: 24px;
+  overflow: hidden;
+  border-radius: 18px;
+  color: var(--paper);
+  background: var(--ink);
+  box-shadow: 0 14px 36px rgba(28, 20, 16, 0.18);
+}
+
+.orders-hero::before {
+  content: '';
+  position: absolute;
+  inset: -80px -40px auto auto;
+  width: 260px;
+  height: 260px;
+  border-radius: 999px;
+  background: rgba(250, 246, 238, 0.09);
+}
+
+.orders-hero-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 560px;
+}
+
+.orders-hero-copy span {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(250, 246, 238, 0.68);
+}
+
+.orders-hero-copy h2 {
+  margin: 8px 0 8px;
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.orders-hero-copy p {
+  max-width: 460px;
+  margin: 0;
+  color: rgba(250, 246, 238, 0.72);
+  line-height: 1.45;
+}
+
+.orders-hero-graphic {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  min-width: 180px;
+  place-items: center;
+  border: 1px solid rgba(250, 246, 238, 0.18);
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, rgba(250, 246, 238, 0.12), transparent),
+    rgba(250, 246, 238, 0.06);
+}
+
+.orders-hero-bars {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  display: flex;
+  align-items: end;
+  gap: 5px;
+}
+
+.orders-hero-bars i {
+  display: block;
+  width: 8px;
+  border-radius: 999px;
+  background: rgba(250, 246, 238, 0.42);
+}
+
+.orders-hero-bars i:nth-child(1) { height: 20px; }
+.orders-hero-bars i:nth-child(2) { height: 38px; }
+.orders-hero-bars i:nth-child(3) { height: 28px; }
+.orders-hero-bars i:nth-child(4) { height: 52px; }
+
+.orders-hero-rare {
+  background: linear-gradient(135deg, var(--rare), var(--ink));
+}
+
+.orders-hero-sage {
+  background: linear-gradient(135deg, var(--sage), var(--ink));
+}
+
+.orders-hero-ochre {
+  background: linear-gradient(135deg, var(--ochre), var(--ink));
+}
+
+.orders-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.orders-controls {
+  display: grid;
+  grid-template-columns: minmax(240px, 1.5fr) repeat(5, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.orders-controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: rgba(28, 20, 16, 0.56);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.orders-controls select,
+.orders-search input {
+  width: 100%;
+  min-height: 40px;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.orders-controls select {
+  padding: 0 10px;
+}
+
+.orders-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 12px;
+  align-self: end;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+}
+
+.orders-search input {
+  min-height: auto;
+  padding: 0;
+  border: none;
+}
+
+.orders-table-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.orders-table-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1.5px solid var(--line);
+}
+
+.orders-table-head h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.orders-table-head p {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 5px 0 0;
+  color: rgba(28, 20, 16, 0.52);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.orders-sort-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: var(--paper-dim);
+  color: rgba(28, 20, 16, 0.64);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.orders-table-wrap {
+  overflow: auto;
+}
+
+.orders-table {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.orders-table th {
+  background: rgba(28, 20, 16, 0.035);
+  color: rgba(28, 20, 16, 0.56);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.orders-table tbody tr:hover {
+  background: rgba(162, 59, 46, 0.045);
+}
+
+.orders-table td:first-child span {
+  display: block;
+  margin-top: 3px;
+  color: rgba(28, 20, 16, 0.45);
+  font-size: 11px;
+}
+
+.orders-items {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-width: 280px;
+}
+
+.orders-status {
+  display: inline-flex;
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.orders-status-placed {
+  background: rgba(162, 59, 46, 0.12);
+  color: var(--rare);
+}
+
+.orders-status-in_prep {
+  background: rgba(212, 162, 76, 0.2);
+  color: #8a5a08;
+}
+
+.orders-status-ready {
+  background: rgba(92, 107, 71, 0.16);
+  color: var(--sage);
+}
+
+.orders-status-completed {
+  background: rgba(28, 20, 16, 0.09);
+  color: var(--ink);
+}
+
+.orders-status-cancelled {
+  background: rgba(28, 20, 16, 0.06);
+  color: rgba(28, 20, 16, 0.46);
+}
+
+.orders-empty,
+.orders-loading {
+  padding: 44px;
+  text-align: center;
+  color: rgba(28, 20, 16, 0.5);
+}
+
+.orders-loading {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  gap: 12px;
+}
+
+.align-right {
+  text-align: right;
+}
+
+@media (max-width: 1100px) {
+  .orders-controls {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .orders-search {
+    grid-column: 1 / -1;
+  }
+
+  .orders-kpis {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .orders-page {
+    padding: 20px 16px;
+  }
+
+  .orders-hero {
+    flex-direction: column;
+  }
+
+  .orders-hero-graphic {
+    min-height: 130px;
+  }
+
+  .orders-controls,
+  .orders-kpis {
+    grid-template-columns: 1fr;
+  }
+}

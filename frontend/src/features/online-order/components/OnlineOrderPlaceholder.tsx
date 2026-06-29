@@ -1,5 +1,4 @@
 import { Globe } from 'lucide-react';
-import './OnlineOrderPlaceholder.css';
 
 export default function OnlineOrderPlaceholder() {
   return (

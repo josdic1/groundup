@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from 'react';
 import {
   Printer,
   TrendingUp,
   ShoppingBag,
   Receipt,
   Activity,
-} from "lucide-react";
+} from 'lucide-react';
 import {
   BarChart,
   Bar,
@@ -17,48 +17,78 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from "recharts";
-import { fetchStats, type Stats } from "../../api/stats";
-import "./DashboardPage.css";
+} from 'recharts';
+import type { Order } from '@groundup/shared-types';
+import { fetchStats, type Stats } from '../../api/stats';
+import { fetchOrders } from '../../api/orders';
+import RevenueDayModal from './components/RevenueDayModal';
+import './DashboardPage.css';
 
 const SHORT_CATEGORY: Record<string, string> = {
-  "Glatt Kosher Beef (Fresh Cuts)": "Beef",
-  "Fresh Poultry (Chicken & Turkey)": "Poultry",
-  "Premium Lamb & Veal": "Lamb & Veal",
-  "Marinated & Oven-Ready Specials (Butcher's Prep)": "Prepared",
-  "Prepared Deli, Provisions & Shabbos Takeout": "Deli",
-  Beverages: "Drinks",
+  'Glatt Kosher Beef (Fresh Cuts)': 'Beef',
+  'Fresh Poultry (Chicken & Turkey)': 'Poultry',
+  'Premium Lamb & Veal': 'Lamb & Veal',
+  "Marinated & Oven-Ready Specials (Butcher's Prep)": 'Prepared',
+  'Prepared Deli, Provisions & Shabbos Takeout': 'Deli',
+  Beverages: 'Drinks',
 };
 
-const CATEGORY_COLORS = ["#a23b2e", "#5c6b47", "#d4a24c", "#6b5a8e"];
+const CATEGORY_COLORS = ['#a23b2e', '#5c6b47', '#d4a24c', '#6b5a8e'];
+
+type RevenueBarClick = {
+  activePayload?: Array<{
+    payload?: {
+      date?: string;
+    };
+  }>;
+};
 
 function shortCategory(name: string): string {
   return SHORT_CATEGORY[name] ?? name;
 }
 
 function formatDayLabel(dateStr: string): string {
-  const d = new Date(dateStr + "T00:00:00");
-  return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  const d = new Date(`${dateStr}T00:00:00`);
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
 function formatHourLabel(hour: number): string {
-  if (hour === 0) return "12am";
-  if (hour === 12) return "12pm";
+  if (hour === 0) return '12am';
+  if (hour === 12) return '12pm';
   return hour < 12 ? `${hour}am` : `${hour - 12}pm`;
+}
+
+function orderDateKey(order: Order): string {
+  return new Date(order.createdAt).toISOString().slice(0, 10);
 }
 
 export default function Dashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedRevenueDay, setSelectedRevenueDay] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchStats()
-      .then(setStats)
+    Promise.all([fetchStats(), fetchOrders()])
+      .then(([nextStats, nextOrders]) => {
+        setStats(nextStats);
+        setOrders(nextOrders);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
 
+  const selectedDayOrders = useMemo(() => {
+    if (!selectedRevenueDay) return [];
+    return orders.filter((order) => orderDateKey(order) === selectedRevenueDay);
+  }, [orders, selectedRevenueDay]);
+
   const handlePrint = () => window.print();
+
+  const handleRevenueDayClick = (state: RevenueBarClick) => {
+    const date = state.activePayload?.[0]?.payload?.date;
+    if (date) setSelectedRevenueDay(date);
+  };
 
   if (loading) {
     return (
@@ -70,9 +100,7 @@ export default function Dashboard() {
   }
 
   if (!stats) {
-    return (
-      <div className="dashboard-loading">Could not load dashboard data.</div>
-    );
+    return <div className="dashboard-loading">Could not load dashboard data.</div>;
   }
 
   const peakHour = stats.busiestHours.reduce(
@@ -126,9 +154,12 @@ export default function Dashboard() {
 
       <div className="dashboard-grid">
         <section className="dashboard-panel panel-wide">
-          <h2>Revenue — last 30 days</h2>
+          <div className="dashboard-panel-head">
+            <h2>Revenue — last 30 days</h2>
+            <span>Click a bar for daily sales</span>
+          </div>
           <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={stats.revenueByDay}>
+            <BarChart data={stats.revenueByDay} onClick={(state) => handleRevenueDayClick(state as RevenueBarClick)}>
               <CartesianGrid
                 strokeDasharray="3 3"
                 stroke="rgba(28,20,16,0.08)"
@@ -137,21 +168,26 @@ export default function Dashboard() {
               <XAxis
                 dataKey="date"
                 tickFormatter={formatDayLabel}
-                tick={{ fontSize: 11, fill: "rgba(28,20,16,0.5)" }}
+                tick={{ fontSize: 11, fill: 'rgba(28,20,16,0.5)' }}
                 interval={Math.ceil(stats.revenueByDay.length / 10)}
               />
               <YAxis
-                tick={{ fontSize: 11, fill: "rgba(28,20,16,0.5)" }}
+                tick={{ fontSize: 11, fill: 'rgba(28,20,16,0.5)' }}
                 width={50}
               />
               <Tooltip
                 formatter={(value) => [
                   `$${Number(value ?? 0).toFixed(2)}`,
-                  "Revenue",
+                  'Revenue',
                 ]}
                 labelFormatter={(label) => formatDayLabel(label as string)}
               />
-              <Bar dataKey="revenue" fill="#a23b2e" radius={[3, 3, 0, 0]} />
+              <Bar
+                dataKey="revenue"
+                fill="#a23b2e"
+                radius={[3, 3, 0, 0]}
+                className="clickable-revenue-bar"
+              />
             </BarChart>
           </ResponsiveContainer>
         </section>
@@ -168,11 +204,11 @@ export default function Dashboard() {
               <XAxis
                 dataKey="date"
                 tickFormatter={formatDayLabel}
-                tick={{ fontSize: 11, fill: "rgba(28,20,16,0.5)" }}
+                tick={{ fontSize: 11, fill: 'rgba(28,20,16,0.5)' }}
                 interval={Math.ceil(stats.categoryTrend.length / 10)}
               />
               <YAxis
-                tick={{ fontSize: 11, fill: "rgba(28,20,16,0.5)" }}
+                tick={{ fontSize: 11, fill: 'rgba(28,20,16,0.5)' }}
                 width={50}
               />
               <Tooltip
@@ -249,15 +285,15 @@ export default function Dashboard() {
               <XAxis
                 dataKey="hour"
                 tickFormatter={formatHourLabel}
-                tick={{ fontSize: 10, fill: "rgba(28,20,16,0.5)" }}
+                tick={{ fontSize: 10, fill: 'rgba(28,20,16,0.5)' }}
                 interval={2}
               />
               <YAxis
-                tick={{ fontSize: 10, fill: "rgba(28,20,16,0.5)" }}
+                tick={{ fontSize: 10, fill: 'rgba(28,20,16,0.5)' }}
                 width={30}
               />
               <Tooltip
-                formatter={(value) => [Number(value ?? 0), "Orders"]}
+                formatter={(value) => [Number(value ?? 0), 'Orders']}
                 labelFormatter={(label) => formatHourLabel(label as number)}
               />
               <Bar dataKey="count" fill="#5c6b47" radius={[3, 3, 0, 0]} />
@@ -265,6 +301,14 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </section>
       </div>
+
+      {selectedRevenueDay && (
+        <RevenueDayModal
+          date={selectedRevenueDay}
+          orders={selectedDayOrders}
+          onClose={() => setSelectedRevenueDay(null)}
+        />
+      )}
     </div>
   );
 }
