@@ -136,11 +136,11 @@ export default function OrderStream({ refreshSignal, onRecall }: Props) {
                       <div className="ticket-actions">
                         {STORE_CONFIG.staff.map((staff) => (
                           <button
-                            key={staff}
+                            key={staff.id}
                             className="claim-btn"
-                            onClick={() => handleClaim(order.id, staff)}
+                            onClick={() => handleClaim(order.id, staff.name)}
                           >
-                            Claim — {staff}
+                            Claim — {staff.name}
                           </button>
                         ))}
                         <button

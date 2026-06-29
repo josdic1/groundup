@@ -2,13 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   Activity,
   ArrowDownUp,
-  CalendarDays,
   ClipboardList,
-  PackageCheck,
-  Receipt,
   Search,
-  Store,
-  Truck,
 } from 'lucide-react';
 import type { Order } from '@groundup/shared-types';
 import { fetchOrders } from '../../api/orders';
@@ -119,71 +114,6 @@ function matchesDate(order: Order, filter: DateFilter): boolean {
   return order.createdAt >= cutoff.getTime();
 }
 
-function getFocusCopy(params: {
-  status: StatusFilter;
-  fulfillment: FulfillmentFilter;
-  dateFilter: DateFilter;
-  sort: SortKey;
-}) {
-  if (params.status !== 'all') {
-    return {
-      label: 'Current view',
-      title: `${STATUS_LABEL[params.status]} orders`,
-      body: 'Only this stage is shown. Use it to clear one operational lane at a time.',
-      icon: PackageCheck,
-      tone: 'rare',
-    };
-  }
-
-  if (params.fulfillment === 'delivery') {
-    return {
-      label: 'Current view',
-      title: 'Delivery orders',
-      body: 'Delivery work is isolated so addresses, notes, and timing stay easy to review.',
-      icon: Truck,
-      tone: 'sage',
-    };
-  }
-
-  if (params.fulfillment === 'pickup') {
-    return {
-      label: 'Current view',
-      title: 'Pickup orders',
-      body: 'Pickup work is grouped for faster handoff at the counter.',
-      icon: Store,
-      tone: 'ochre',
-    };
-  }
-
-  if (params.sort === 'totalHigh') {
-    return {
-      label: 'Current view',
-      title: 'Highest totals first',
-      body: 'Large orders are surfaced first for review, prep priority, and follow-up.',
-      icon: Receipt,
-      tone: 'rare',
-    };
-  }
-
-  if (params.dateFilter !== 'all') {
-    return {
-      label: 'Current view',
-      title: params.dateFilter === 'today' ? "Today’s orders" : 'Recent orders',
-      body: 'The table is narrowed to the selected time window.',
-      icon: CalendarDays,
-      tone: 'sage',
-    };
-  }
-
-  return {
-    label: 'Current view',
-    title: 'All orders',
-    body: 'Search, filter, and sort every order from one simple control page.',
-    icon: ClipboardList,
-    tone: 'ink',
-  };
-}
-
 function FilterPills<T extends string>({
   label,
   value,
@@ -276,13 +206,18 @@ export default function OrdersPage() {
   const revenue = revenueOrders.reduce((sum, order) => sum + order.total, 0);
   const avgTicket = revenueOrders.length > 0 ? revenue / revenueOrders.length : 0;
 
-  const focus = getFocusCopy({
-    status: statusFilter,
-    fulfillment: fulfillmentFilter,
-    dateFilter,
-    sort,
-  });
-  const FocusIcon = focus.icon;
+  const activeViewLabel = [
+    statusFilter !== 'all' ? STATUS_OPTIONS.find((option) => option.value === statusFilter)?.label : null,
+    sourceFilter !== 'all' ? SOURCE_OPTIONS.find((option) => option.value === sourceFilter)?.label : null,
+    fulfillmentFilter !== 'all'
+      ? FULFILLMENT_OPTIONS.find((option) => option.value === fulfillmentFilter)?.label
+      : null,
+    dateFilter !== 'all' ? DATE_OPTIONS.find((option) => option.value === dateFilter)?.label : null,
+  ]
+    .filter(Boolean)
+    .join(' · ');
+
+  const sortLabel = SORT_OPTIONS.find((option) => option.value === sort)?.label ?? 'Newest';
 
   const clearFilters = () => {
     setQuery('');
@@ -311,24 +246,6 @@ export default function OrdersPage() {
         </div>
       </header>
 
-      <section className={`orders-hero orders-hero-${focus.tone}`}>
-        <div className="orders-hero-copy">
-          <span>{focus.label}</span>
-          <h2>{focus.title}</h2>
-          <p>{focus.body}</p>
-        </div>
-
-        <div className="orders-hero-graphic">
-          <FocusIcon size={54} strokeWidth={1.6} />
-          <div className="orders-hero-bars">
-            <i />
-            <i />
-            <i />
-            <i />
-          </div>
-        </div>
-      </section>
-
       <div className="orders-kpis">
         <div className="kpi-card">
           <span className="kpi-label">Shown</span>
@@ -350,6 +267,14 @@ export default function OrdersPage() {
           <span className="kpi-value">${avgTicket.toFixed(2)}</span>
         </div>
       </div>
+
+      <section className="orders-view-strip">
+        <div>
+          <span className="orders-view-label">Current view</span>
+          <strong>{activeViewLabel || 'All orders'}</strong>
+        </div>
+        <span>Sorted by {sortLabel}</span>
+      </section>
 
       <section className="orders-controls panel orders-controls-pills">
         <div className="orders-search orders-search-wide">

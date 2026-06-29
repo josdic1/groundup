@@ -3195,3 +3195,66 @@ button:focus-visible,
     min-width: 92px;
   }
 }
+
+
+/* =========================================
+   Source: features/orders/OrdersPage.css
+   Compact current-view strip
+   ========================================= */
+
+.orders-view-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: -8px 0 16px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: rgba(250, 246, 238, 0.72);
+}
+
+.orders-view-strip div {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+
+.orders-view-label {
+  color: rgba(28, 20, 16, 0.52);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.orders-view-strip strong {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.orders-view-strip > span {
+  color: rgba(28, 20, 16, 0.55);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .orders-view-strip {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .orders-view-strip div {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
+  }
+}
