@@ -261,9 +261,9 @@ export default function CustomersPage() {
         </div>
       </div>
 
-      <section className="panel stack" style={{ marginBottom: 18 }}>
-        <div className="split">
-          <div className="customers-search-wrap" style={{ marginBottom: 0 }}>
+      <section className="panel stack customer-filter-panel">
+        <div className="customer-filter-top">
+          <div className="customers-search-wrap">
             <Search size={16} strokeWidth={2} className="search-icon" />
             <input
               className="customers-search-input"
@@ -271,11 +271,22 @@ export default function CustomersPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
+
+            {search.trim() && (
+              <button
+                className="customers-search-clear"
+                type="button"
+                aria-label="Clear search"
+                onClick={() => setSearch('')}
+              >
+                <X size={15} strokeWidth={2.4} />
+              </button>
+            )}
           </div>
 
-          <div className="cluster">
+          <div className="customer-filter-chips">
             <button
-              className={`btn ${focus === 'all' ? 'btn-primary' : 'btn-secondary'}`}
+              className={`customer-filter-chip ${focus === 'all' ? 'active' : ''}`}
               type="button"
               onClick={() => setFocus('all')}
             >
@@ -283,7 +294,7 @@ export default function CustomersPage() {
             </button>
 
             <button
-              className={`btn ${focus === 'vip' ? 'btn-primary' : 'btn-secondary'}`}
+              className={`customer-filter-chip ${focus === 'vip' ? 'active' : ''}`}
               type="button"
               onClick={() => setFocus('vip')}
             >
@@ -291,7 +302,7 @@ export default function CustomersPage() {
             </button>
 
             <button
-              className={`btn ${focus === 'needsFollowup' ? 'btn-primary' : 'btn-secondary'}`}
+              className={`customer-filter-chip ${focus === 'needsFollowup' ? 'active' : ''}`}
               type="button"
               onClick={() => setFocus('needsFollowup')}
             >
@@ -299,7 +310,7 @@ export default function CustomersPage() {
             </button>
 
             <button
-              className={`btn ${focus === 'noOrders' ? 'btn-primary' : 'btn-secondary'}`}
+              className={`customer-filter-chip ${focus === 'noOrders' ? 'active' : ''}`}
               type="button"
               onClick={() => setFocus('noOrders')}
             >
@@ -308,9 +319,15 @@ export default function CustomersPage() {
           </div>
         </div>
 
-        <p className="dashboard-subnote" style={{ margin: 0 }}>
-          Showing {filtered.length} customer{filtered.length === 1 ? '' : 's'} · ${totalRevenue.toFixed(2)} lifetime revenue
-        </p>
+        <div className="customer-filter-summary">
+          <span>
+            Showing <strong>{filtered.length}</strong> customer{filtered.length === 1 ? '' : 's'}
+          </span>
+          <span className="customer-filter-dot">•</span>
+          <span>
+            <strong>${totalRevenue.toFixed(2)}</strong> lifetime revenue
+          </span>
+        </div>
       </section>
 
       <div className="customers-table-wrap">

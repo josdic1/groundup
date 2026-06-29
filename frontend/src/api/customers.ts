@@ -40,6 +40,14 @@ export async function updateCustomer(
   return res.json();
 }
 
+export async function deleteCustomer(customerId: string): Promise<void> {
+  const res = await fetch(`${BASE}/customers/${customerId}`, {
+    method: 'DELETE',
+  });
+
+  if (!res.ok) throw new Error('Failed to delete customer');
+}
+
 export type CustomerInsights = {
   mostLoyal: CustomerWithStats[];
   highestSpend: CustomerWithStats[];

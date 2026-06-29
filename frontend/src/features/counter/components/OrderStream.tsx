@@ -1,8 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
 import { X, Undo2, Store, Truck, RotateCcw } from 'lucide-react';
-import type { Order, OrderStatus } from '@groundup/shared-types';
+import type {Order, OrderStatus, Staff} from "@groundup/shared-types";
 import { fetchOrders, updateOrder } from '../../../api/orders';
 import { STORE_CONFIG } from '../../../config';
+import { fetchStaff } from '../../../api/staff';
 
 const COLUMNS: { status: OrderStatus; label: string }[] = [
   { status: 'placed', label: 'Placed' },
@@ -24,6 +25,7 @@ type Props = {
 
 export default function OrderStream({ refreshSignal, onRecall }: Props) {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [staffList, setStaffList] = useState<Staff[]>([]);
 
   const load = useCallback(async () => {
     try {
@@ -32,6 +34,10 @@ export default function OrderStream({ refreshSignal, onRecall }: Props) {
     } catch (err) {
       console.error('Failed to load orders', err);
     }
+  }, []);
+
+  useEffect(() => {
+    fetchStaff().then(setStaffList).catch(console.error);
   }, []);
 
   useEffect(() => {
@@ -134,7 +140,7 @@ export default function OrderStream({ refreshSignal, onRecall }: Props) {
 
                     {order.status === 'placed' && (
                       <div className="ticket-actions">
-                        {STORE_CONFIG.staff.map((staff) => (
+                        {staffList.map((staff) => (
                           <button
                             key={staff.id}
                             className="claim-btn"

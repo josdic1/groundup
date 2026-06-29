@@ -13,6 +13,7 @@ import { CUSTOMERS } from "./data/customers.js";
 import { HISTORICAL_ORDERS } from "./data/historicalOrders.js";
 import { MENU } from "./data/menu.js";
 import { MENU_TIERS } from "./data/menuTiers.js";
+import { STAFF } from "./data/staff.js";
 
 const app = express();
 app.use(cors());
@@ -44,6 +45,12 @@ function computeCustomerStats(customerId: string) {
       : null;
   return { totalSpent, orderCount, lastOrderAt };
 }
+
+// ----- Staff -----
+
+app.get("/api/staff", (_req, res) => {
+  res.json(STAFF.filter((staff) => staff.isActive));
+});
 
 // ----- Orders -----
 
