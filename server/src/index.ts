@@ -1,13 +1,25 @@
-import express from 'express';
-import cors from 'cors';
-import type { Order, OrderLineItem, OrderSource, FulfillmentType, Address, Customer, MenuItem } from '@groundup/shared-types';
-import { CUSTOMERS } from './data/customers.js';
-import { HISTORICAL_ORDERS } from './data/historicalOrders.js';
-import { MENU } from './data/menu.js';
+import express from "express";
+import cors from "cors";
+import type {
+  Order,
+  OrderLineItem,
+  OrderSource,
+  FulfillmentType,
+  Address,
+  Customer,
+  MenuItem,
+} from "@groundup/shared-types";
+import { CUSTOMERS } from "./data/customers.js";
+import { HISTORICAL_ORDERS } from "./data/historicalOrders.js";
+import { MENU } from "./data/menu.js";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// --- Helpers ---
+const formatCurrency = (num: number) => Math.round(num * 100) / 100;
+const formatDecimal = (num: number) => Math.round(num * 10) / 10;
 
 let orders: Order[] = [];
 let orderCounter = 1001;
@@ -19,26 +31,35 @@ const menuCategoryById = new Map(MENU.map((m) => [m.id, m.category]));
 
 function computeCustomerStats(customerId: string) {
   const customerOrders = orders.filter(
-    (o) => o.customerId === customerId && o.status !== 'cancelled'
+    (o) => o.customerId === customerId && o.status !== "cancelled",
   );
-  const totalSpent = Math.round(
-    customerOrders.reduce((sum, o) => sum + o.total, 0) * 100
-  ) / 100;
+  const totalSpent = formatCurrency(
+    customerOrders.reduce((sum, o) => sum + o.total, 0),
+  );
   const orderCount = customerOrders.length;
-  const lastOrderAt = customerOrders.length > 0
-    ? Math.max(...customerOrders.map((o) => o.createdAt))
-    : null;
+  const lastOrderAt =
+    customerOrders.length > 0
+      ? Math.max(...customerOrders.map((o) => o.createdAt))
+      : null;
   return { totalSpent, orderCount, lastOrderAt };
 }
 
 // ----- Orders -----
 
-app.get('/api/orders', (req, res) => {
+app.get("/api/orders", (req, res) => {
   res.json(orders);
 });
 
-app.post('/api/orders', (req, res) => {
-  const { customerName, customerId, items, source, fulfillment, notes, deliveryAddress } = req.body as {
+app.post("/api/orders", (req, res) => {
+  const {
+    customerName,
+    customerId,
+    items,
+    source,
+    fulfillment,
+    notes,
+    deliveryAddress,
+  } = req.body as {
     customerName: string;
     customerId?: string | null;
     items: OrderLineItem[];
@@ -49,22 +70,20 @@ app.post('/api/orders', (req, res) => {
   };
 
   if (!items || items.length === 0) {
-    return res.status(400).json({ error: 'Order must have at least one item' });
+    return res.status(400).json({ error: "Order must have at least one item" });
   }
 
-  const total = Math.round(
-    items.reduce((sum, i) => sum + i.lineTotal, 0) * 100
-  ) / 100;
+  const total = formatCurrency(items.reduce((sum, i) => sum + i.lineTotal, 0));
 
   const newOrder: Order = {
     id: `ord-${orderCounter++}`,
     customerId: customerId ?? null,
-    customerName: customerName || 'Walk-in',
+    customerName: customerName || "Walk-in",
     items,
     total,
-    status: 'placed',
-    source: source ?? 'counter',
-    fulfillment: fulfillment ?? 'in_store',
+    status: "placed",
+    source: source ?? "counter",
+    fulfillment: fulfillment ?? "in_store",
     claimedBy: null,
     createdAt: Date.now(),
     notes,
@@ -75,16 +94,16 @@ app.post('/api/orders', (req, res) => {
   res.status(201).json(newOrder);
 });
 
-app.patch('/api/orders/:id', (req, res) => {
+app.patch("/api/orders/:id", (req, res) => {
   const { id } = req.params;
   const { status, claimedBy } = req.body as {
-    status?: Order['status'];
+    status?: Order["status"];
     claimedBy?: string;
   };
 
   const order = orders.find((o) => o.id === id);
   if (!order) {
-    return res.status(404).json({ error: 'Order not found' });
+    return res.status(404).json({ error: "Order not found" });
   }
 
   if (status) order.status = status;
@@ -93,14 +112,18 @@ app.patch('/api/orders/:id', (req, res) => {
   res.json(order);
 });
 
-app.delete('/api/orders/:id', (req, res) => {
+app.delete("/api/orders/:id", (req, res) => {
   const { id } = req.params;
   const order = orders.find((o) => o.id === id);
   if (!order) {
-    return res.status(404).json({ error: 'Order not found' });
+    return res.status(404).json({ error: "Order not found" });
   }
-  if (order.status !== 'placed') {
-    return res.status(400).json({ error: 'Only unclaimed orders can be sent back to the register' });
+  if (order.status !== "placed") {
+    return res
+      .status(400)
+      .json({
+        error: "Only unclaimed orders can be sent back to the register",
+      });
   }
   orders = orders.filter((o) => o.id !== id);
   res.json({ ok: true });
@@ -108,34 +131,45 @@ app.delete('/api/orders/:id', (req, res) => {
 
 // ----- Menu -----
 
-app.get('/api/menu', (req, res) => {
+app.get("/api/menu", (req, res) => {
   res.json(menu.filter((item) => item.isActive));
 });
 
-app.get('/api/menu/admin', (req, res) => {
+app.get("/api/menu/admin", (req, res) => {
   res.json(menu);
 });
 
-app.patch('/api/menu/:id', (req, res) => {
+app.patch("/api/menu/:id", (req, res) => {
   const { id } = req.params;
   const item = menu.find((m) => m.id === id);
-  if (!item) return res.status(404).json({ error: 'Menu item not found' });
+  if (!item) return res.status(404).json({ error: "Menu item not found" });
 
   Object.assign(item, req.body, { id: item.id });
   res.json(item);
 });
 
-app.post('/api/menu', (req, res) => {
+app.post("/api/menu", (req, res) => {
   const body = req.body as Partial<MenuItem>;
 
-  if (!body.name || !body.category || body.price === undefined || !body.unit || !body.soldBy) {
-    return res.status(400).json({ error: 'Missing required menu fields' });
+  if (
+    !body.name ||
+    !body.category ||
+    body.price === undefined ||
+    !body.unit ||
+    !body.soldBy
+  ) {
+    return res.status(400).json({ error: "Missing required menu fields" });
   }
 
-  const id = body.id || body.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  const id =
+    body.id ||
+    body.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
 
   if (menu.some((m) => m.id === id)) {
-    return res.status(400).json({ error: 'Menu item already exists' });
+    return res.status(400).json({ error: "Menu item already exists" });
   }
 
   const item: MenuItem = {
@@ -154,8 +188,7 @@ app.post('/api/menu', (req, res) => {
 
 // ----- Customers -----
 
-// Returns every customer with computed order stats merged in, for the table view.
-app.get('/api/customers', (req, res) => {
+app.get("/api/customers", (req, res) => {
   const enriched = customers.map((c) => ({
     ...c,
     ...computeCustomerStats(c.customerId),
@@ -163,7 +196,7 @@ app.get('/api/customers', (req, res) => {
   res.json(enriched);
 });
 
-app.get('/api/customers/:id/orders', (req, res) => {
+app.get("/api/customers/:id/orders", (req, res) => {
   const { id } = req.params;
   const customerOrders = orders
     .filter((o) => o.customerId === id)
@@ -171,38 +204,39 @@ app.get('/api/customers/:id/orders', (req, res) => {
   res.json(customerOrders);
 });
 
-app.post('/api/customers', (req, res) => {
-  const body = req.body as Omit<Customer, 'customerId'>;
+app.post("/api/customers", (req, res) => {
+  const body = req.body as Omit<Customer, "customerId">;
   if (!body.firstName || !body.lastName) {
-    return res.status(400).json({ error: 'First and last name are required' });
+    return res.status(400).json({ error: "First and last name are required" });
   }
   const newCustomer: Customer = {
     customerId: `cust-new-${customerCounter++}`,
     firstName: body.firstName,
     lastName: body.lastName,
-    phone: body.phone ?? '',
-    email: body.email ?? '',
+    phone: body.phone ?? "",
+    email: body.email ?? "",
     loyaltyPoints: body.loyaltyPoints ?? 0,
-    dietaryNotes: body.dietaryNotes ?? '',
-    address: body.address ?? { street: '', city: '', state: 'NJ', zip: '' },
+    dietaryNotes: body.dietaryNotes ?? "",
+    address: body.address ?? { street: "", city: "", state: "NJ", zip: "" },
   };
   customers = [newCustomer, ...customers];
-  res.status(201).json({ ...newCustomer, ...computeCustomerStats(newCustomer.customerId) });
+  res
+    .status(201)
+    .json({ ...newCustomer, ...computeCustomerStats(newCustomer.customerId) });
 });
 
-app.patch('/api/customers/:id', (req, res) => {
+app.patch("/api/customers/:id", (req, res) => {
   const { id } = req.params;
   const customer = customers.find((c) => c.customerId === id);
   if (!customer) {
-    return res.status(404).json({ error: 'Customer not found' });
+    return res.status(404).json({ error: "Customer not found" });
   }
   const body = req.body as Partial<Customer>;
   Object.assign(customer, body, { customerId: customer.customerId });
   res.json({ ...customer, ...computeCustomerStats(customer.customerId) });
 });
 
-// Key insights — most loyal, highest spend, customers who haven't ordered in a while.
-app.get('/api/customers/insights', (req, res) => {
+app.get("/api/customers/insights", (req, res) => {
   const now = Date.now();
   const sixtyDaysAgo = now - 60 * 24 * 60 * 60 * 1000;
 
@@ -229,27 +263,42 @@ app.get('/api/customers/insights', (req, res) => {
 
 // ----- Stats / Dashboard -----
 
-app.get('/api/stats', (req, res) => {
+app.get("/api/stats", (req, res) => {
   const now = Date.now();
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
   const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
 
-  const revenueOrders = orders.filter((o) => o.status !== 'cancelled');
+  const revenueOrders = orders.filter((o) => o.status !== "cancelled");
   const last30Days = revenueOrders.filter((o) => o.createdAt >= thirtyDaysAgo);
-  const todayOrders = revenueOrders.filter((o) => o.createdAt >= startOfToday.getTime());
+  const todayOrders = revenueOrders.filter(
+    (o) => o.createdAt >= startOfToday.getTime(),
+  );
 
   // At-a-glance
-  const todayRevenue = Math.round(todayOrders.reduce((s, o) => s + o.total, 0) * 100) / 100;
+  const todayRevenue = formatCurrency(
+    todayOrders.reduce((s, o) => s + o.total, 0),
+  );
   const todayOrderCount = todayOrders.length;
-  const avgTicket = todayOrderCount > 0 ? Math.round((todayRevenue / todayOrderCount) * 100) / 100 : 0;
-  const activeOrders = orders.filter((o) => o.status === 'placed' || o.status === 'in_prep' || o.status === 'ready').length;
+  const avgTicket =
+    todayOrderCount > 0 ? formatCurrency(todayRevenue / todayOrderCount) : 0;
+  const activeOrders = orders.filter(
+    (o) =>
+      o.status === "placed" || o.status === "in_prep" || o.status === "ready",
+  ).length;
 
   // Top-selling items (last 30 days), by revenue and by quantity
-  const itemStats = new Map<string, { name: string; revenue: number; unitsSold: number }>();
+  const itemStats = new Map<
+    string,
+    { name: string; revenue: number; unitsSold: number }
+  >();
   for (const o of last30Days) {
     for (const item of o.items) {
-      const existing = itemStats.get(item.menuItemId) ?? { name: item.name, revenue: 0, unitsSold: 0 };
+      const existing = itemStats.get(item.menuItemId) ?? {
+        name: item.name,
+        revenue: 0,
+        unitsSold: 0,
+      };
       existing.revenue += item.lineTotal;
       existing.unitsSold += item.quantity;
       itemStats.set(item.menuItemId, existing);
@@ -258,11 +307,11 @@ app.get('/api/stats', (req, res) => {
   const topByRevenue = Array.from(itemStats.values())
     .sort((a, b) => b.revenue - a.revenue)
     .slice(0, 8)
-    .map((i) => ({ ...i, revenue: Math.round(i.revenue * 100) / 100 }));
+    .map((i) => ({ ...i, revenue: formatCurrency(i.revenue) }));
   const topByUnits = Array.from(itemStats.values())
     .sort((a, b) => b.unitsSold - a.unitsSold)
     .slice(0, 8)
-    .map((i) => ({ ...i, unitsSold: Math.round(i.unitsSold * 10) / 10 }));
+    .map((i) => ({ ...i, unitsSold: formatDecimal(i.unitsSold) }));
 
   // Revenue by day (last 30 days)
   const revenueByDayMap = new Map<string, number>();
@@ -271,23 +320,28 @@ app.get('/api/stats', (req, res) => {
     revenueByDayMap.set(day, (revenueByDayMap.get(day) ?? 0) + o.total);
   }
   const revenueByDay = Array.from(revenueByDayMap.entries())
-    .map(([date, revenue]) => ({ date, revenue: Math.round(revenue * 100) / 100 }))
+    .map(([date, revenue]) => ({ date, revenue: formatCurrency(revenue) }))
     .sort((a, b) => (a.date < b.date ? -1 : 1));
 
   // Revenue by category (last 30 days)
   const categoryMap = new Map<string, number>();
   for (const o of last30Days) {
     for (const item of o.items) {
-      const category = menuCategoryById.get(item.menuItemId) ?? 'Other';
-      categoryMap.set(category, (categoryMap.get(category) ?? 0) + item.lineTotal);
+      const category = menuCategoryById.get(item.menuItemId) ?? "Other";
+      categoryMap.set(
+        category,
+        (categoryMap.get(category) ?? 0) + item.lineTotal,
+      );
     }
   }
   const revenueByCategory = Array.from(categoryMap.entries())
-    .map(([category, revenue]) => ({ category, revenue: Math.round(revenue * 100) / 100 }))
+    .map(([category, revenue]) => ({
+      category,
+      revenue: formatCurrency(revenue),
+    }))
     .sort((a, b) => b.revenue - a.revenue);
 
-  // Revenue by category, per day — for the category trend line chart.
-  // Only the top categories by total revenue are tracked individually to keep the chart readable.
+  // Revenue by category, per day
   const topCategoryNames = revenueByCategory.slice(0, 4).map((c) => c.category);
   const categoryByDayMap = new Map<string, Record<string, number>>();
   for (const o of last30Days) {
@@ -295,7 +349,7 @@ app.get('/api/stats', (req, res) => {
     if (!categoryByDayMap.has(day)) categoryByDayMap.set(day, {});
     const dayBucket = categoryByDayMap.get(day)!;
     for (const item of o.items) {
-      const category = menuCategoryById.get(item.menuItemId) ?? 'Other';
+      const category = menuCategoryById.get(item.menuItemId) ?? "Other";
       if (!topCategoryNames.includes(category)) continue;
       dayBucket[category] = (dayBucket[category] ?? 0) + item.lineTotal;
     }
@@ -304,7 +358,7 @@ app.get('/api/stats', (req, res) => {
     .map(([date, categories]) => {
       const row: Record<string, number | string> = { date };
       for (const cat of topCategoryNames) {
-        row[cat] = Math.round((categories[cat] ?? 0) * 100) / 100;
+        row[cat] = formatCurrency(categories[cat] ?? 0);
       }
       return row;
     })
@@ -335,61 +389,97 @@ app.get('/api/stats', (req, res) => {
 
 // ----- Demo controls -----
 
-// Generates a handful of "active right now" orders, timed relative to
-// whenever this is called — so they always look genuinely fresh, never stale.
 function generateFreshLiveOrders(): Order[] {
   const customersWithData = customers.slice(0, 8);
   const sampleItems: OrderLineItem[] = [
-    { menuItemId: 'beef-brisket-first-cut', name: 'First Cut Beef Brisket', quantity: 3.2, unitPrice: 15.49, lineTotal: 49.57 },
-    { menuItemId: 'poultry-chicken-cutlets-family-pack', name: 'Chicken Cutlets (Family Pack)', quantity: 2.4, unitPrice: 7.99, lineTotal: 19.18 },
-    { menuItemId: 'beef-pepper-steak-fajita', name: 'Premium Pepper Steak (Fajita Strips)', quantity: 1.8, unitPrice: 13.99, lineTotal: 25.18 },
-    { menuItemId: 'deli-sweet-noodle-kugel-24oz', name: 'Sweet Noodle Kugel (24 oz)', quantity: 2, unitPrice: 10.99, lineTotal: 21.98 },
-    { menuItemId: 'lamb-shoulder-chops', name: "Tevya's Ranch Shoulder Lamb Chops", quantity: 1.3, unitPrice: 17.99, lineTotal: 23.39 },
+    {
+      menuItemId: "beef-brisket-first-cut",
+      name: "First Cut Beef Brisket",
+      quantity: 3.2,
+      unitPrice: 15.49,
+      lineTotal: 49.57,
+    },
+    {
+      menuItemId: "poultry-chicken-cutlets-family-pack",
+      name: "Chicken Cutlets (Family Pack)",
+      quantity: 2.4,
+      unitPrice: 7.99,
+      lineTotal: 19.18,
+    },
+    {
+      menuItemId: "beef-pepper-steak-fajita",
+      name: "Premium Pepper Steak (Fajita Strips)",
+      quantity: 1.8,
+      unitPrice: 13.99,
+      lineTotal: 25.18,
+    },
+    {
+      menuItemId: "deli-sweet-noodle-kugel-24oz",
+      name: "Sweet Noodle Kugel (24 oz)",
+      quantity: 2,
+      unitPrice: 10.99,
+      lineTotal: 21.98,
+    },
+    {
+      menuItemId: "lamb-shoulder-chops",
+      name: "Tevya's Ranch Shoulder Lamb Chops",
+      quantity: 1.3,
+      unitPrice: 17.99,
+      lineTotal: 23.39,
+    },
   ];
 
-  const specs: { status: Order['status']; claimedBy: string | null; minutesAgo: number }[] = [
-    { status: 'placed', claimedBy: null, minutesAgo: 2 },
-    { status: 'placed', claimedBy: null, minutesAgo: 8 },
-    { status: 'in_prep', claimedBy: 'Mike', minutesAgo: 12 },
-    { status: 'in_prep', claimedBy: 'Dani', minutesAgo: 18 },
-    { status: 'ready', claimedBy: 'Sam', minutesAgo: 25 },
+  const specs: {
+    status: Order["status"];
+    claimedBy: string | null;
+    minutesAgo: number;
+  }[] = [
+    { status: "placed", claimedBy: null, minutesAgo: 2 },
+    { status: "placed", claimedBy: null, minutesAgo: 8 },
+    { status: "in_prep", claimedBy: "Mike", minutesAgo: 12 },
+    { status: "in_prep", claimedBy: "Dani", minutesAgo: 18 },
+    { status: "ready", claimedBy: "Sam", minutesAgo: 25 },
   ];
 
   const now = Date.now();
   return specs.map((spec, i) => {
-    const customer = Math.random() < 0.6 ? customersWithData[i % customersWithData.length] : null;
+    const customer =
+      Math.random() < 0.6
+        ? customersWithData[i % customersWithData.length]
+        : null;
     const items = [sampleItems[i % sampleItems.length]];
-    const total = Math.round(items.reduce((s, it) => s + it.lineTotal, 0) * 100) / 100;
+    const total = formatCurrency(items.reduce((s, it) => s + it.lineTotal, 0));
     return {
       id: `live-${i + 1}`,
       customerId: customer?.customerId ?? null,
-      customerName: customer ? `${customer.firstName} ${customer.lastName}` : 'Walk-in',
+      customerName: customer
+        ? `${customer.firstName} ${customer.lastName}`
+        : "Walk-in",
       items,
       total,
       status: spec.status,
-      source: 'counter',
-      fulfillment: 'in_store',
+      source: "counter",
+      fulfillment: "in_store",
       claimedBy: spec.claimedBy,
       createdAt: now - spec.minutesAgo * 60 * 1000,
     };
   });
 }
 
-// Wipes all orders entirely. Menu and customers stay as-is.
-app.post('/api/demo/empty', (req, res) => {
+app.post("/api/demo/empty", (req, res) => {
   orders = [];
-  res.json({ ok: true, message: 'All orders cleared' });
+  res.json({ ok: true, message: "All orders cleared" });
 });
 
-// Restores the curated demo dataset — historical completed orders, plus a
-// handful of freshly-timed live orders so the stream never looks stale.
-app.post('/api/demo/seed', (req, res) => {
+app.post("/api/demo/seed", (req, res) => {
   orders = [...HISTORICAL_ORDERS, ...generateFreshLiveOrders()];
-  res.json({ ok: true, message: 'Demo data loaded' });
+  res.json({ ok: true, message: "Demo data loaded" });
 });
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
-  console.log(`Starting empty. ${HISTORICAL_ORDERS.length} historical orders available via the Data menu.`);
+  console.log(
+    `Starting empty. ${HISTORICAL_ORDERS.length} historical orders available via the Data menu.`,
+  );
 });

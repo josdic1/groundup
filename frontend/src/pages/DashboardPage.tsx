@@ -1,5 +1,11 @@
-import { useEffect, useState } from 'react';
-import { Printer, TrendingUp, ShoppingBag, Receipt, Activity } from 'lucide-react';
+import { useEffect, useState } from "react";
+import {
+  Printer,
+  TrendingUp,
+  ShoppingBag,
+  Receipt,
+  Activity,
+} from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -11,33 +17,33 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from 'recharts';
-import { fetchStats, type Stats } from '../api/stats';
-import './DashboardPage.css';
+} from "recharts";
+import { fetchStats, type Stats } from "../api/stats";
+import "./DashboardPage.css";
 
 const SHORT_CATEGORY: Record<string, string> = {
-  'Glatt Kosher Beef (Fresh Cuts)': 'Beef',
-  'Fresh Poultry (Chicken & Turkey)': 'Poultry',
-  'Premium Lamb & Veal': 'Lamb & Veal',
-  "Marinated & Oven-Ready Specials (Butcher's Prep)": 'Prepared',
-  'Prepared Deli, Provisions & Shabbos Takeout': 'Deli',
-  Beverages: 'Drinks',
+  "Glatt Kosher Beef (Fresh Cuts)": "Beef",
+  "Fresh Poultry (Chicken & Turkey)": "Poultry",
+  "Premium Lamb & Veal": "Lamb & Veal",
+  "Marinated & Oven-Ready Specials (Butcher's Prep)": "Prepared",
+  "Prepared Deli, Provisions & Shabbos Takeout": "Deli",
+  Beverages: "Drinks",
 };
 
-const CATEGORY_COLORS = ['#a23b2e', '#5c6b47', '#d4a24c', '#6b5a8e'];
+const CATEGORY_COLORS = ["#a23b2e", "#5c6b47", "#d4a24c", "#6b5a8e"];
 
 function shortCategory(name: string): string {
   return SHORT_CATEGORY[name] ?? name;
 }
 
 function formatDayLabel(dateStr: string): string {
-  const d = new Date(dateStr + 'T00:00:00');
-  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  const d = new Date(dateStr + "T00:00:00");
+  return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
 function formatHourLabel(hour: number): string {
-  if (hour === 0) return '12am';
-  if (hour === 12) return '12pm';
+  if (hour === 0) return "12am";
+  if (hour === 12) return "12pm";
   return hour < 12 ? `${hour}am` : `${hour - 12}pm`;
 }
 
@@ -64,12 +70,14 @@ export default function Dashboard() {
   }
 
   if (!stats) {
-    return <div className="dashboard-loading">Could not load dashboard data.</div>;
+    return (
+      <div className="dashboard-loading">Could not load dashboard data.</div>
+    );
   }
 
   const peakHour = stats.busiestHours.reduce(
     (best, h) => (h.count > best.count ? h : best),
-    stats.busiestHours[0]
+    stats.busiestHours[0],
   );
 
   return (
@@ -87,22 +95,30 @@ export default function Dashboard() {
 
       <div className="glance-cards">
         <div className="glance-card">
-          <div className="glance-icon"><Receipt size={16} strokeWidth={2} /></div>
+          <div className="glance-icon">
+            <Receipt size={16} strokeWidth={2} />
+          </div>
           <span className="glance-label">Today's revenue</span>
           <span className="glance-value">${stats.todayRevenue.toFixed(2)}</span>
         </div>
         <div className="glance-card">
-          <div className="glance-icon"><ShoppingBag size={16} strokeWidth={2} /></div>
+          <div className="glance-icon">
+            <ShoppingBag size={16} strokeWidth={2} />
+          </div>
           <span className="glance-label">Orders today</span>
           <span className="glance-value">{stats.todayOrderCount}</span>
         </div>
         <div className="glance-card">
-          <div className="glance-icon"><TrendingUp size={16} strokeWidth={2} /></div>
+          <div className="glance-icon">
+            <TrendingUp size={16} strokeWidth={2} />
+          </div>
           <span className="glance-label">Avg ticket</span>
           <span className="glance-value">${stats.avgTicket.toFixed(2)}</span>
         </div>
         <div className="glance-card">
-          <div className="glance-icon"><Activity size={16} strokeWidth={2} /></div>
+          <div className="glance-icon">
+            <Activity size={16} strokeWidth={2} />
+          </div>
           <span className="glance-label">Active orders</span>
           <span className="glance-value">{stats.activeOrders}</span>
         </div>
@@ -113,16 +129,26 @@ export default function Dashboard() {
           <h2>Revenue — last 30 days</h2>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={stats.revenueByDay}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(28,20,16,0.08)" vertical={false} />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="rgba(28,20,16,0.08)"
+                vertical={false}
+              />
               <XAxis
                 dataKey="date"
                 tickFormatter={formatDayLabel}
-                tick={{ fontSize: 11, fill: 'rgba(28,20,16,0.5)' }}
+                tick={{ fontSize: 11, fill: "rgba(28,20,16,0.5)" }}
                 interval={Math.ceil(stats.revenueByDay.length / 10)}
               />
-              <YAxis tick={{ fontSize: 11, fill: 'rgba(28,20,16,0.5)' }} width={50} />
+              <YAxis
+                tick={{ fontSize: 11, fill: "rgba(28,20,16,0.5)" }}
+                width={50}
+              />
               <Tooltip
-                formatter={(value: number) => [`$${value.toFixed(2)}`, 'Revenue']}
+                formatter={(value) => [
+                  `$${Number(value ?? 0).toFixed(2)}`,
+                  "Revenue",
+                ]}
                 labelFormatter={(label) => formatDayLabel(label as string)}
               />
               <Bar dataKey="revenue" fill="#a23b2e" radius={[3, 3, 0, 0]} />
@@ -134,16 +160,23 @@ export default function Dashboard() {
           <h2>Category trend — last 30 days</h2>
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={stats.categoryTrend}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(28,20,16,0.08)" vertical={false} />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="rgba(28,20,16,0.08)"
+                vertical={false}
+              />
               <XAxis
                 dataKey="date"
                 tickFormatter={formatDayLabel}
-                tick={{ fontSize: 11, fill: 'rgba(28,20,16,0.5)' }}
+                tick={{ fontSize: 11, fill: "rgba(28,20,16,0.5)" }}
                 interval={Math.ceil(stats.categoryTrend.length / 10)}
               />
-              <YAxis tick={{ fontSize: 11, fill: 'rgba(28,20,16,0.5)' }} width={50} />
+              <YAxis
+                tick={{ fontSize: 11, fill: "rgba(28,20,16,0.5)" }}
+                width={50}
+              />
               <Tooltip
-                formatter={(value: number) => `$${Number(value).toFixed(2)}`}
+                formatter={(value) => `$${Number(value ?? 0).toFixed(2)}`}
                 labelFormatter={(label) => formatDayLabel(label as string)}
               />
               <Legend
@@ -216,12 +249,15 @@ export default function Dashboard() {
               <XAxis
                 dataKey="hour"
                 tickFormatter={formatHourLabel}
-                tick={{ fontSize: 10, fill: 'rgba(28,20,16,0.5)' }}
+                tick={{ fontSize: 10, fill: "rgba(28,20,16,0.5)" }}
                 interval={2}
               />
-              <YAxis tick={{ fontSize: 10, fill: 'rgba(28,20,16,0.5)' }} width={30} />
+              <YAxis
+                tick={{ fontSize: 10, fill: "rgba(28,20,16,0.5)" }}
+                width={30}
+              />
               <Tooltip
-                formatter={(value: number) => [value, 'Orders']}
+                formatter={(value) => [Number(value ?? 0), "Orders"]}
                 labelFormatter={(label) => formatHourLabel(label as number)}
               />
               <Bar dataKey="count" fill="#5c6b47" radius={[3, 3, 0, 0]} />
