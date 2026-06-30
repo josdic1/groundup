@@ -2,8 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   Activity,
   ArrowDownUp,
+  ChevronDown,
   ClipboardList,
   Search,
+  SlidersHorizontal,
+  X,
 } from 'lucide-react';
 import type { Order } from '@groundup/shared-types';
 import { fetchOrders } from '../../api/orders';
@@ -154,6 +157,7 @@ export default function OrdersPage() {
   const [fulfillmentFilter, setFulfillmentFilter] = useState<FulfillmentFilter>('all');
   const [dateFilter, setDateFilter] = useState<DateFilter>('all');
   const [sort, setSort] = useState<SortKey>('newest');
+  const [advancedOpen, setAdvancedOpen] = useState(false);
 
   useEffect(() => {
     fetchOrders()
@@ -205,6 +209,21 @@ export default function OrdersPage() {
 
   const revenue = revenueOrders.reduce((sum, order) => sum + order.total, 0);
   const avgTicket = revenueOrders.length > 0 ? revenue / revenueOrders.length : 0;
+
+  const advancedFilterCount = [
+    sourceFilter !== 'all',
+    fulfillmentFilter !== 'all',
+    dateFilter !== 'all',
+    sort !== 'newest',
+  ].filter(Boolean).length;
+
+  const hasAnyFilter =
+    query.trim() ||
+    statusFilter !== 'all' ||
+    sourceFilter !== 'all' ||
+    fulfillmentFilter !== 'all' ||
+    dateFilter !== 'all' ||
+    sort !== 'newest';
 
   const activeViewLabel = [
     statusFilter !== 'all' ? STATUS_OPTIONS.find((option) => option.value === statusFilter)?.label : null,
@@ -276,50 +295,94 @@ export default function OrdersPage() {
         <span>Sorted by {sortLabel}</span>
       </section>
 
-      <section className="orders-controls panel orders-controls-pills">
-        <div className="orders-search orders-search-wide">
-          <Search size={16} strokeWidth={2} />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search customer, item, or order id…"
+      <section className="orders-controls panel">
+        <div className="orders-controls-main">
+          <div className="orders-search orders-search-wide">
+            <Search size={16} strokeWidth={2} />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search customer, item, or order id…"
+            />
+            {query.trim() && (
+              <button
+                className="orders-search-clear"
+                type="button"
+                aria-label="Clear search"
+                onClick={() => setQuery('')}
+              >
+                <X size={15} strokeWidth={2.2} />
+              </button>
+            )}
+          </div>
+
+          <button
+            className={`orders-advanced-toggle ${advancedOpen ? 'open' : ''}`}
+            type="button"
+            aria-expanded={advancedOpen}
+            onClick={() => setAdvancedOpen((value) => !value)}
+          >
+            <SlidersHorizontal size={15} strokeWidth={2.2} />
+            Advanced
+            {advancedFilterCount > 0 && (
+              <span className="orders-advanced-count">{advancedFilterCount}</span>
+            )}
+            <ChevronDown size={15} strokeWidth={2.2} />
+          </button>
+        </div>
+
+        <div className="orders-status-row">
+          <FilterPills
+            label="Status"
+            value={statusFilter}
+            options={STATUS_OPTIONS}
+            onChange={setStatusFilter}
           />
         </div>
 
-        <FilterPills
-          label="Status"
-          value={statusFilter}
-          options={STATUS_OPTIONS}
-          onChange={setStatusFilter}
-        />
+        {advancedOpen && (
+          <div className="orders-advanced-panel">
+            <div className="orders-advanced-grid">
+              <FilterPills
+                label="Source"
+                value={sourceFilter}
+                options={SOURCE_OPTIONS}
+                onChange={setSourceFilter}
+              />
 
-        <FilterPills
-          label="Source"
-          value={sourceFilter}
-          options={SOURCE_OPTIONS}
-          onChange={setSourceFilter}
-        />
+              <FilterPills
+                label="Fulfillment"
+                value={fulfillmentFilter}
+                options={FULFILLMENT_OPTIONS}
+                onChange={setFulfillmentFilter}
+              />
 
-        <FilterPills
-          label="Fulfillment"
-          value={fulfillmentFilter}
-          options={FULFILLMENT_OPTIONS}
-          onChange={setFulfillmentFilter}
-        />
+              <FilterPills
+                label="Date"
+                value={dateFilter}
+                options={DATE_OPTIONS}
+                onChange={setDateFilter}
+              />
 
-        <FilterPills
-          label="Date"
-          value={dateFilter}
-          options={DATE_OPTIONS}
-          onChange={setDateFilter}
-        />
+              <FilterPills
+                label="Sort"
+                value={sort}
+                options={SORT_OPTIONS}
+                onChange={setSort}
+              />
+            </div>
 
-        <FilterPills
-          label="Sort"
-          value={sort}
-          options={SORT_OPTIONS}
-          onChange={setSort}
-        />
+            <div className="orders-advanced-footer">
+              <span>Advanced filters refine the table without changing order data.</span>
+
+              {hasAnyFilter && (
+                <button className="orders-clear-button" type="button" onClick={clearFilters}>
+                  Clear filters
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </section>
 
       <section className="orders-table-card panel">
@@ -332,13 +395,17 @@ export default function OrdersPage() {
             </p>
           </div>
 
-          <button className="btn btn-secondary" type="button" onClick={clearFilters}>
-            Clear filters
-          </button>
+          <div className="orders-table-actions">
+            {hasAnyFilter && (
+              <button className="btn btn-secondary" type="button" onClick={clearFilters}>
+                Clear filters
+              </button>
+            )}
 
-          <div className="orders-sort-chip">
-            <ArrowDownUp size={13} strokeWidth={2} />
-            {SORT_OPTIONS.find((option) => option.value === sort)?.label ?? sort}
+            <div className="orders-sort-chip">
+              <ArrowDownUp size={13} strokeWidth={2} />
+              {sortLabel}
+            </div>
           </div>
         </div>
 
