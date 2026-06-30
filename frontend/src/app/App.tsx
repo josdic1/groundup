@@ -25,7 +25,7 @@ function App() {
   }, []);
 
   return (
-    <BrowserRouter basename="/butcher">
+    <BrowserRouter>
       <MenuProvider>
         <div className="app-shell">
           <TopNav />
