@@ -5,7 +5,7 @@ import {
   type CSSProperties,
   type PointerEvent,
 } from "react";
-import { ReceiptText, X } from "lucide-react";
+import { MoveHorizontal, ReceiptText, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import type { Order } from "@groundup/shared-types";
 import CounterScreen from "./components/CounterScreen";
@@ -177,14 +177,24 @@ export default function CounterPage() {
         </div>
 
         <button
-          className={`mkb-quick-help-trigger ${helpPulseActive ? "is-pulsing" : ""}`}
+          className={`mkb-quick-help-trigger ${helpPulseActive ? "is-pulsing" : "is-resize-mode"}`}
           type="button"
-          aria-label="Open quick help"
-          title="Open quick help"
+          aria-label={helpPulseActive ? "Open quick help" : "Resize counter and order stream panes"}
+          title={helpPulseActive ? "Open quick help" : "Drag to resize. Double-click to reset."}
           style={{ left: `calc(${counterWidth}% - 24px)` }}
-          onClick={() => setShowQuickHelp(true)}
+          onPointerDown={helpPulseActive ? undefined : startResize}
+          onDoubleClick={helpPulseActive ? undefined : resetWidth}
+          onClick={() => {
+            if (helpPulseActive) {
+              setShowQuickHelp(true);
+            }
+          }}
         >
-          <ReceiptText size={18} strokeWidth={2.25} />
+          {helpPulseActive ? (
+            <ReceiptText size={18} strokeWidth={2.25} />
+          ) : (
+            <MoveHorizontal size={17} strokeWidth={2.45} />
+          )}
         </button>
 
         <button

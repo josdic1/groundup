@@ -6225,3 +6225,57 @@ button:focus-visible,
     font-size: 13px;
   }
 }
+
+
+/* =========================================
+   Quick help trigger morphs into resize grip
+   ========================================= */
+
+.mkb-quick-help-trigger {
+  transition:
+    width 220ms ease,
+    height 220ms ease,
+    border-radius 220ms ease,
+    opacity 220ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease,
+    color 160ms ease !important;
+}
+
+.mkb-quick-help-trigger.is-pulsing {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 999px !important;
+  z-index: 80 !important;
+}
+
+.mkb-quick-help-trigger.is-resize-mode {
+  top: 12px !important;
+  width: 44px !important;
+  height: 28px !important;
+  border-radius: 999px !important;
+  background: rgba(250, 246, 238, 0.58) !important;
+  color: rgba(162, 59, 46, 0.56) !important;
+  border: 1px solid rgba(28, 20, 16, 0.11) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(4px) !important;
+  cursor: ew-resize !important;
+  z-index: 26 !important;
+}
+
+.mkb-quick-help-trigger.is-resize-mode:hover {
+  transform: translateY(-1px) !important;
+  background: rgba(250, 246, 238, 0.86) !important;
+  color: rgba(162, 59, 46, 0.78) !important;
+  box-shadow: 0 8px 20px rgba(28, 20, 16, 0.08) !important;
+}
+
+.mkb-quick-help-trigger.is-resize-mode + .mkb-resize-handle {
+  z-index: 20 !important;
+}
+
+/* Hide the old resize text hint because the icon becomes the resize affordance */
+.mkb-app .mkb-resize-hint {
+  display: none !important;
+}
