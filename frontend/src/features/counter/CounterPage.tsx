@@ -6,7 +6,7 @@ import {
   type PointerEvent,
 } from "react";
 import { ReceiptText, X } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import type { Order } from "@groundup/shared-types";
 import CounterScreen from "./components/CounterScreen";
 import OrderStream from "./components/OrderStream";
@@ -24,28 +24,46 @@ const HELP_PULSE_MS = 10000;
 
 const QUICK_HELP_LINES = [
   {
-    want: "I want to ring up a counter order",
-    go: "Stay on Register",
+    title: "Take an in-store order",
+    body: "Choose items, enter weight or quantity, add notes, then send the order to the stream.",
+    to: "/",
+    cta: "Open Register",
   },
   {
-    want: "I want to see all active and completed orders",
-    go: "Go to Orders",
+    title: "Check order status",
+    body: "Review active, ready, completed, counter, and online orders.",
+    to: "/orders",
+    cta: "Open Orders",
   },
   {
-    want: "I want to test the customer-facing site",
-    go: "Go to Online",
+    title: "Place a test online order",
+    body: "Use the customer-facing flow to build a cart and submit pickup or delivery orders.",
+    to: "/online",
+    cta: "Open Online",
   },
   {
-    want: "I want customer details and loyalty info",
-    go: "Go to Customers",
+    title: "Review or update the menu",
+    body: "See the active items available to staff and customers.",
+    to: "/menu",
+    cta: "Open Menu",
   },
   {
-    want: "I want business totals and trends",
-    go: "Go to Reports",
+    title: "Look up a customer",
+    body: "Find customer profiles, contact info, loyalty points, notes, and order history.",
+    to: "/customers",
+    cta: "Open Customers",
   },
   {
-    want: "I want demo data or the walkthrough",
-    go: "Open Admin",
+    title: "View sales and activity",
+    body: "Check order volume, revenue, daily trends, and business summaries.",
+    to: "/reports",
+    cta: "Open Reports",
+  },
+  {
+    title: "Load demo data or restart the tour",
+    body: "Use the Admin menu for sample data, clearing active orders, and launching the walkthrough.",
+    action: "tutorial",
+    cta: "Start Walkthrough",
   },
 ];
 
@@ -218,11 +236,32 @@ export default function CounterPage() {
 
               <div className="mkb-help-lines">
                 {QUICK_HELP_LINES.map((item) => (
-                  <div key={item.want} className="mkb-help-line">
-                    <span className="mkb-help-want">
-                      I want to… {item.want}
-                    </span>
-                    <span className="mkb-help-go">Go here: {item.go}</span>
+                  <div key={item.title} className="mkb-help-line">
+                    <div className="mkb-help-copy">
+                      <strong>{item.title}</strong>
+                      <span>{item.body}</span>
+                    </div>
+
+                    {item.to ? (
+                      <Link
+                        className="mkb-help-link"
+                        to={item.to}
+                        onClick={() => setShowQuickHelp(false)}
+                      >
+                        {item.cta}
+                      </Link>
+                    ) : (
+                      <button
+                        className="mkb-help-link"
+                        type="button"
+                        onClick={() => {
+                          setShowQuickHelp(false);
+                          window.dispatchEvent(new Event("groundup:start-tutorial"));
+                        }}
+                      >
+                        {item.cta}
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>

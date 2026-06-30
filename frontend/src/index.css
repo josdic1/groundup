@@ -6151,3 +6151,77 @@ button:focus-visible,
     font-size: 15px;
   }
 }
+
+
+/* =========================================
+   Quick help ticket link rows
+   ========================================= */
+
+.mkb-help-line {
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 18px !important;
+}
+
+.mkb-help-copy {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.mkb-help-copy strong {
+  color: #1f160f;
+  font-size: 20px;
+  font-weight: 950;
+  line-height: 1.15;
+}
+
+.mkb-help-copy span {
+  color: rgba(31, 22, 15, 0.72);
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.mkb-help-link {
+  display: inline-flex;
+  min-width: 138px;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  border: 1.5px solid rgba(31, 22, 15, 0.85);
+  border-radius: 999px;
+  background: #1f160f;
+  color: #fff8dc;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 950;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.mkb-help-link:hover {
+  background: #7a2d24;
+  border-color: #7a2d24;
+  color: white;
+}
+
+@media (max-width: 640px) {
+  .mkb-help-line {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .mkb-help-link {
+    width: 100%;
+  }
+
+  .mkb-help-copy strong {
+    font-size: 17px;
+  }
+
+  .mkb-help-copy span {
+    font-size: 13px;
+  }
+}
