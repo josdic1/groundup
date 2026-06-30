@@ -5814,3 +5814,40 @@ button:focus-visible,
   position: relative !important;
   z-index: 1001 !important;
 }
+
+
+/* =========================================
+   Top nav tooltip placement
+   ========================================= */
+
+.top-nav [data-tooltip]::after {
+  top: calc(100% + 10px) !important;
+  bottom: auto !important;
+}
+
+.top-nav [data-tooltip]::before {
+  top: calc(100% + 5px) !important;
+  bottom: auto !important;
+}
+
+.admin-dropdown [data-tooltip]::after {
+  top: 50% !important;
+  right: calc(100% + 10px) !important;
+  bottom: auto !important;
+  left: auto !important;
+  transform: translateY(-50%) translateX(4px) !important;
+  text-align: left !important;
+}
+
+.admin-dropdown [data-tooltip]::before {
+  top: 50% !important;
+  right: calc(100% + 5px) !important;
+  bottom: auto !important;
+  left: auto !important;
+  transform: translateY(-50%) rotate(45deg) !important;
+}
+
+.admin-dropdown [data-tooltip]:hover::after,
+.admin-dropdown [data-tooltip]:focus-visible::after {
+  transform: translateY(-50%) translateX(0) !important;
+}
