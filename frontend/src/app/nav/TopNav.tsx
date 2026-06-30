@@ -43,75 +43,42 @@ export default function TopNav() {
     }
   };
 
-  const startWalkthrough = () => {
-    window.dispatchEvent(new Event("groundup:start-tutorial"));
-    setAdminOpen(false);
-  };
-
   const navClass = ({ isActive }: { isActive: boolean }) =>
     `top-nav-link ${isActive ? "active" : ""}`;
 
   return (
     <header className="top-nav">
-      <a
-        href="/"
-        className="top-nav-brand"
-        data-tooltip="Return to the main register screen."
-      >
+      <a href="/" className="top-nav-brand">
         {STORE_CONFIG.name}
       </a>
 
       <nav className="top-nav-links" aria-label="Main navigation">
-        <NavLink
-          to="/"
-          className={navClass}
-          data-tooltip="Build in-store counter orders and watch the live order stream."
-        >
+        <NavLink to="/" className={navClass}>
           <LayoutGrid size={15} />
           Register
         </NavLink>
 
-        <NavLink
-          to="/orders"
-          className={navClass}
-          data-tooltip="Search, filter, and manage current and past orders."
-        >
+        <NavLink to="/orders" className={navClass}>
           <ClipboardList size={15} />
           Orders
         </NavLink>
 
-        <NavLink
-          to="/online"
-          className={navClass}
-          data-tooltip="Preview the customer-facing online ordering flow."
-        >
+        <NavLink to="/online" className={navClass}>
           <Globe size={15} />
           Online
         </NavLink>
 
-        <NavLink
-          to="/menu"
-          className={navClass}
-          data-tooltip="Review the active menu and available ordering items."
-        >
+        <NavLink to="/menu" className={navClass}>
           <LayoutList size={15} />
           Menu
         </NavLink>
 
-        <NavLink
-          to="/customers"
-          className={navClass}
-          data-tooltip="Look up customers, order history, notes, and loyalty activity."
-        >
+        <NavLink to="/customers" className={navClass}>
           <Users size={15} />
           Customers
         </NavLink>
 
-        <NavLink
-          to="/reports"
-          className={navClass}
-          data-tooltip="View sales, order volume, and business performance summaries."
-        >
+        <NavLink to="/reports" className={navClass}>
           <BarChart3 size={15} />
           Reports
         </NavLink>
@@ -122,7 +89,6 @@ export default function TopNav() {
             className={`top-nav-link admin-trigger ${adminOpen ? "active-open" : ""}`}
             aria-haspopup="menu"
             aria-expanded={adminOpen}
-            data-tooltip="Open setup, demo, and walkthrough tools."
             onClick={() => setAdminOpen((value) => !value)}
             onBlur={() => setTimeout(() => setAdminOpen(false), 150)}
           >
@@ -136,11 +102,10 @@ export default function TopNav() {
               <button
                 className="admin-dropdown-item admin-dropdown-primary"
                 type="button"
-                role="menuitem"
-                data-tooltip="Launch the guided product walkthrough."
                 onMouseDown={(event) => {
                   event.preventDefault();
-                  startWalkthrough();
+                  window.dispatchEvent(new Event('groundup:start-tutorial'));
+                  setAdminOpen(false);
                 }}
               >
                 Start walkthrough
@@ -149,9 +114,7 @@ export default function TopNav() {
               <button
                 className="admin-dropdown-item"
                 type="button"
-                role="menuitem"
                 disabled={working}
-                data-tooltip="Reload realistic sample customers, orders, and demo activity."
                 onMouseDown={(event) => {
                   event.preventDefault();
                   handleDemoData();
@@ -163,9 +126,7 @@ export default function TopNav() {
               <button
                 className="admin-dropdown-item admin-dropdown-danger"
                 type="button"
-                role="menuitem"
                 disabled={working}
-                data-tooltip="Remove current active orders and reset the live order stream."
                 onMouseDown={(event) => {
                   event.preventDefault();
                   handleEmpty();
