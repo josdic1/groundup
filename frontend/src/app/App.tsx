@@ -11,7 +11,6 @@ import Toast from '../components/ui/Toast';
 import { MenuProvider } from '../providers/MenuProvider';
 import './App.shell.css';
 import TutorialToast from '../components/ui/TutorialToast';
-import GoogleAnalytics from '../components/GoogleAnalytics';
 
 function App() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -30,7 +29,6 @@ function App() {
       <MenuProvider>
         <div className="app-shell">
           <TopNav />
-      <GoogleAnalytics />
       <TutorialToast />
           <div className="app-shell-body">
             <Routes>
