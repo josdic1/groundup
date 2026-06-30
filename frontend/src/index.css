@@ -5814,3 +5814,84 @@ button:focus-visible,
   position: relative !important;
   z-index: 1001 !important;
 }
+
+
+/* =========================================
+   FINAL Admin dropdown override
+   ========================================= */
+
+.top-nav {
+  overflow: visible !important;
+}
+
+.top-nav-links {
+  overflow: visible !important;
+}
+
+.admin-dropdown-wrap {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+.admin-dropdown {
+  position: absolute !important;
+  top: calc(100% + 8px) !important;
+  right: 0 !important;
+  z-index: 9999 !important;
+  display: grid !important;
+  gap: 5px !important;
+  min-width: 230px !important;
+  padding: 8px !important;
+  border: 1px solid rgba(255, 252, 246, 0.12) !important;
+  border-radius: 16px !important;
+  background: rgba(28, 20, 16, 0.97) !important;
+  box-shadow: 0 22px 52px rgba(0, 0, 0, 0.34) !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+.admin-dropdown-item {
+  display: flex !important;
+  width: 100% !important;
+  min-height: 40px !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  padding: 0 12px !important;
+  border: 0 !important;
+  border-radius: 11px !important;
+  background: transparent !important;
+  color: rgba(255, 252, 246, 0.84) !important;
+  font: inherit !important;
+  font-size: 13px !important;
+  font-weight: 850 !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  appearance: none !important;
+}
+
+.admin-dropdown-item:hover {
+  background: rgba(255, 252, 246, 0.08) !important;
+  color: white !important;
+}
+
+.admin-dropdown-primary {
+  background: rgba(162, 59, 46, 0.28) !important;
+  color: white !important;
+}
+
+.admin-dropdown-primary:hover {
+  background: rgba(162, 59, 46, 0.38) !important;
+}
+
+.admin-dropdown-danger {
+  color: rgba(255, 226, 220, 0.92) !important;
+}
+
+.admin-dropdown-danger:hover {
+  background: rgba(162, 59, 46, 0.2) !important;
+  color: white !important;
+}
+
+.admin-dropdown-item:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
