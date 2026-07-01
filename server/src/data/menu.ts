@@ -1,4 +1,4 @@
-import type { MenuItem } from '@groundup/shared-types';
+import type { MenuItem } from "@groundup/shared-types";
 
 export const MENU: MenuItem[] = [
   {
@@ -379,9 +379,9 @@ export const MENU: MenuItem[] = [
     soldBy: "each",
     isActive: true,
   },
-    {
+  {
     id: "deli-beef-fry-packaged",
-    name: "Packaged and pre-weighed premium beef fry",
+    name: "Beef Fry (packaged)",
     category: "Prepared Deli, Provisions & Shabbos Takeout",
     price: 11.99,
     unit: "per container",
