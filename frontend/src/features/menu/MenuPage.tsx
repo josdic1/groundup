@@ -3,19 +3,20 @@ import type { MenuItem, SoldBy } from '@groundup/shared-types';
 import { useMenuContext } from '../../providers/MenuProvider';
 import './MenuPage.css';
 
-const blankItem = {
+const makeBlankItem = (category = 'Beef') => ({
   name: '',
-  category: 'Specials',
+  category,
   price: 0,
   unit: 'per lb',
   soldBy: 'weight' as SoldBy,
   isActive: true,
-};
+});
 
 export default function MenuPage() {
   const { menu, categories, loading, error, saveMenuItem, addMenuItem } = useMenuContext();
   const [draft, setDraft] = useState<Record<string, MenuItem>>({});
-  const [newItem, setNewItem] = useState(blankItem);
+  const defaultAddCategory = categories.includes('Beef') ? 'Beef' : categories[0] ?? 'Specials';
+  const [newItem, setNewItem] = useState(makeBlankItem(defaultAddCategory));
 
   const grouped = useMemo(() => {
     return categories.map((category) => ({
@@ -47,7 +48,7 @@ export default function MenuPage() {
     if (!newItem.name.trim()) return;
 
     await addMenuItem(newItem);
-    setNewItem(blankItem);
+    setNewItem(makeBlankItem(newItem.category));
   };
 
   if (loading) {
@@ -77,7 +78,7 @@ export default function MenuPage() {
       </header>
 
       <section className="menu-add-card">
-        <h2>Add Special</h2>
+        <h2>Add Menu Item</h2>
 
         <div className="menu-add-grid">
           <input
@@ -86,11 +87,16 @@ export default function MenuPage() {
             onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
           />
 
-          <input
-            placeholder="Category"
+          <select
             value={newItem.category}
             onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
-          />
+          >
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
 
           <input
             type="number"
