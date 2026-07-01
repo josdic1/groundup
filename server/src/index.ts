@@ -543,8 +543,18 @@ app.post("/api/demo/empty", (req, res) => {
 });
 
 app.post("/api/demo/seed", (req, res) => {
-  orders = [...HISTORICAL_ORDERS, ...generateFreshLiveOrders()];
-  res.json({ ok: true, message: "Demo data loaded" });
+  const completedHistoricalOrders = HISTORICAL_ORDERS.filter(
+    (order) => order.status === "completed" || order.status === "cancelled",
+  );
+
+  orders = [...completedHistoricalOrders, ...generateFreshLiveOrders()];
+
+  res.json({
+    ok: true,
+    message: "Demo data loaded",
+    historicalOrders: completedHistoricalOrders.length,
+    liveOrders: 5,
+  });
 });
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
