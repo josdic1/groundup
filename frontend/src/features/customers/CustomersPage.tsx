@@ -46,6 +46,10 @@ function needsFollowup(customer: CustomerWithStats): boolean {
   return customer.lastOrderAt < sixtyDaysAgo;
 }
 
+function isVip(customer: CustomerWithStats): boolean {
+  return customer.totalSpent >= 200 || (customer.orderCount ?? 0) >= 5;
+}
+
 export default function CustomersPage() {
   const navigate = useNavigate();
 
@@ -100,7 +104,7 @@ export default function CustomersPage() {
     });
 
     if (focus === 'vip') {
-      rows = rows.filter((customer) => customer.totalSpent >= 200 || customer.loyaltyPoints >= 100);
+      rows = rows.filter(isVip);
     }
 
     if (focus === 'needsFollowup') {
@@ -136,9 +140,7 @@ export default function CustomersPage() {
     });
   }, [customers, search, focus, sortKey, sortDir]);
 
-  const vipCount = customers.filter(
-    (customer) => customer.totalSpent >= 200 || customer.loyaltyPoints >= 100,
-  ).length;
+  const vipCount = customers.filter(isVip).length;
   const followupCount = customers.filter(needsFollowup).length;
   const totalRevenue = customers.reduce((sum, customer) => sum + customer.totalSpent, 0);
   const totalOrders = customers.reduce((sum, customer) => sum + customer.orderCount, 0);
