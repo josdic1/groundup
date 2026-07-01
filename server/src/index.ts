@@ -35,8 +35,6 @@ app.get("/health", (_req, res) => {
   });
 });
 
-
-
 // --- Helpers ---
 const formatCurrency = (num: number) => Math.round(num * 100) / 100;
 const formatDecimal = (num: number) => Math.round(num * 10) / 10;
@@ -277,7 +275,6 @@ app.patch("/api/customers/:id", (req, res) => {
   res.json({ ...customer, ...computeCustomerStats(customer.customerId) });
 });
 
-
 app.delete("/api/customers/:id", (req, res) => {
   const { id } = req.params;
   const customer = customers.find((c) => c.customerId === id);
@@ -295,7 +292,8 @@ app.delete("/api/customers/:id", (req, res) => {
       ? {
           ...order,
           customerId: null,
-          customerName: order.customerName || customerName || "Deleted customer",
+          customerName:
+            order.customerName || customerName || "Deleted customer",
         }
       : order,
   );
@@ -509,8 +507,8 @@ function generateFreshLiveOrders(): Order[] {
   }[] = [
     { status: "placed", claimedBy: null, minutesAgo: 2 },
     { status: "placed", claimedBy: null, minutesAgo: 8 },
-    { status: "in_prep", claimedBy: "Mike", minutesAgo: 12 },
-    { status: "in_prep", claimedBy: "Dani", minutesAgo: 18 },
+    { status: "in_prep", claimedBy: "Rust", minutesAgo: 12 },
+    { status: "in_prep", claimedBy: "Marty", minutesAgo: 18 },
     { status: "ready", claimedBy: "Sam", minutesAgo: 25 },
   ];
 
