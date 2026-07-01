@@ -379,6 +379,15 @@ export const MENU: MenuItem[] = [
     soldBy: "each",
     isActive: true,
   },
+    {
+    id: "deli-beef-fry-packaged",
+    name: "Packaged and pre-weighed premium beef fry",
+    category: "Prepared Deli, Provisions & Shabbos Takeout",
+    price: 11.99,
+    unit: "per container",
+    soldBy: "each",
+    isActive: true,
+  },
   {
     id: "deli-chicken-schnitzel-prepared",
     name: "Prepared Breaded Chicken Schnitzel (Ready to Eat)",

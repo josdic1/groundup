@@ -1,4 +1,4 @@
-import type { MenuItemTiers } from '@groundup/shared-types';
+import type { MenuItemTiers } from "@groundup/shared-types";
 
 export const MENU_TIERS: MenuItemTiers[] = [
   {
@@ -283,45 +283,31 @@ export const MENU_TIERS: MenuItemTiers[] = [
   },
   {
     menuItemId: "deli-beef-salami-chub-16oz",
-    tiers: [
-      { label: "Standard", weightLbs: 1.0, price: 10.49 },
-    ],
+    tiers: [{ label: "Standard", weightLbs: 1.0, price: 10.49 }],
   },
   {
     menuItemId: "deli-sliced-beef-pastrami-6oz",
-    tiers: [
-      { label: "Standard", weightLbs: 0.375, price: 9.99 },
-    ],
+    tiers: [{ label: "Standard", weightLbs: 0.375, price: 9.99 }],
   },
   {
     menuItemId: "deli-sliced-smoked-turkey-breast-12oz",
-    tiers: [
-      { label: "Standard", weightLbs: 0.75, price: 12.99 },
-    ],
+    tiers: [{ label: "Standard", weightLbs: 0.75, price: 12.99 }],
   },
   {
     menuItemId: "deli-potato-kugel-family-24oz",
-    tiers: [
-      { label: "Standard", weightLbs: 1.5, price: 11.99 },
-    ],
+    tiers: [{ label: "Standard", weightLbs: 1.5, price: 11.99 }],
   },
   {
     menuItemId: "deli-sweet-noodle-kugel-24oz",
-    tiers: [
-      { label: "Standard", weightLbs: 1.5, price: 10.99 },
-    ],
+    tiers: [{ label: "Standard", weightLbs: 1.5, price: 10.99 }],
   },
   {
     menuItemId: "deli-broccoli-kugel-12oz",
-    tiers: [
-      { label: "Standard", weightLbs: 0.75, price: 8.99 },
-    ],
+    tiers: [{ label: "Standard", weightLbs: 0.75, price: 8.99 }],
   },
   {
     menuItemId: "deli-beef-cholent-thu-fri",
-    tiers: [
-      { label: "Standard", weightLbs: 2.0, price: 11.99 },
-    ],
+    tiers: [{ label: "Standard", weightLbs: 2.0, price: 11.99 }],
   },
   {
     menuItemId: "deli-chicken-schnitzel-prepared",
@@ -332,27 +318,23 @@ export const MENU_TIERS: MenuItemTiers[] = [
     ],
   },
   {
+    menuItemId: "deli-beef-fry-packaged",
+    tiers: [{ label: "Standard", weightLbs: null, price: 11.99 }],
+  },
+  {
     menuItemId: "bev-dr-browns-cream-soda",
-    tiers: [
-      { label: "Standard", weightLbs: null, price: 2.49 },
-    ],
+    tiers: [{ label: "Standard", weightLbs: null, price: 2.49 }],
   },
   {
     menuItemId: "bev-dr-browns-black-cherry",
-    tiers: [
-      { label: "Standard", weightLbs: null, price: 2.49 },
-    ],
+    tiers: [{ label: "Standard", weightLbs: null, price: 2.49 }],
   },
   {
     menuItemId: "bev-dr-browns-cel-ray",
-    tiers: [
-      { label: "Standard", weightLbs: null, price: 2.49 },
-    ],
+    tiers: [{ label: "Standard", weightLbs: null, price: 2.49 }],
   },
   {
     menuItemId: "bev-sparkling-water",
-    tiers: [
-      { label: "Standard", weightLbs: null, price: 1.99 },
-    ],
+    tiers: [{ label: "Standard", weightLbs: null, price: 1.99 }],
   },
 ];
