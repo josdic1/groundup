@@ -9,6 +9,7 @@ import {
   PieChart,
   Search,
   ShoppingCart,
+  Trash2,
   UserPlus,
   Users,
   X,
@@ -19,6 +20,7 @@ import {
   fetchCustomerOrderHistory,
   createCustomer,
   updateCustomer,
+  deleteCustomer,
 } from '../../api/customers';
 import { invalidateCustomersCache } from '../../hooks/useCustomers';
 import CustomerEditModal from './components/CustomerEditModal';
@@ -204,6 +206,28 @@ export default function CustomersPage() {
     invalidateCustomersCache();
     setShowAddModal(false);
     load();
+  };
+
+
+  const handleDeleteCustomer = async (customer: CustomerWithStats) => {
+    const name = getFullName(customer) || "this customer";
+    const orderCount = customer.orderCount ?? 0;
+
+    const message =
+      orderCount > 0
+        ? `Delete ${name}? This customer has ${orderCount} order${orderCount === 1 ? "" : "s"}. The orders will stay, but the customer record will be removed.`
+        : `Delete ${name}?`;
+
+    if (!window.confirm(message)) return;
+
+    try {
+      await deleteCustomer(customer.customerId);
+      invalidateCustomersCache();
+      load();
+    } catch (err) {
+      console.error(err);
+      window.alert("Could not delete customer.");
+    }
   };
 
   return (
@@ -414,6 +438,15 @@ export default function CustomersPage() {
                     >
                       <Pencil size={15} strokeWidth={2} />
                     </button>
+
+                    <button
+                      className="row-action-btn"
+                      title="Delete customer"
+                      onClick={() => handleDeleteCustomer(customer)}
+                    >
+                      <Trash2 size={15} strokeWidth={2} />
+                    </button>
+
                   </td>
                 </tr>
               ))}

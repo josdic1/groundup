@@ -277,6 +277,38 @@ app.patch("/api/customers/:id", (req, res) => {
   res.json({ ...customer, ...computeCustomerStats(customer.customerId) });
 });
 
+
+app.delete("/api/customers/:id", (req, res) => {
+  const { id } = req.params;
+  const customer = customers.find((c) => c.customerId === id);
+
+  if (!customer) {
+    return res.status(404).json({ error: "Customer not found" });
+  }
+
+  const customerName = `${customer.firstName} ${customer.lastName}`.trim();
+
+  const detachedOrders = orders.filter((o) => o.customerId === id).length;
+
+  orders = orders.map((order) =>
+    order.customerId === id
+      ? {
+          ...order,
+          customerId: null,
+          customerName: order.customerName || customerName || "Deleted customer",
+        }
+      : order,
+  );
+
+  customers = customers.filter((c) => c.customerId !== id);
+
+  res.json({
+    ok: true,
+    deletedCustomerId: id,
+    detachedOrders,
+  });
+});
+
 app.get("/api/customers/insights", (req, res) => {
   const now = Date.now();
   const sixtyDaysAgo = now - 60 * 24 * 60 * 60 * 1000;
