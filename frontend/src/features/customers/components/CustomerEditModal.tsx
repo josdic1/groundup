@@ -1,26 +1,33 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import type { CustomerWithStats, Address } from "@groundup/shared-types";
+import "./CustomerEditModal.css";
+
+type CustomerSaveData = {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  loyaltyPoints: number;
+  dietaryNotes: string;
+  address: Address;
+};
 
 type Props = {
   customer: CustomerWithStats | null;
   onClose: () => void;
-  onSave: (data: {
-    firstName: string;
-    lastName: string;
-    phone: string;
-    email: string;
-    loyaltyPoints: number;
-    dietaryNotes: string;
-    address: Address;
-  }) => Promise<void>;
+  onSave: (data: CustomerSaveData) => Promise<void>;
+  disableBackdropClose?: boolean;
 };
 
 export default function CustomerEditModal({
   customer,
   onClose,
   onSave,
+  disableBackdropClose = false,
 }: Props) {
+  const isEdit = customer !== null;
+
   const [formData, setFormData] = useState({
     firstName: customer?.firstName ?? "",
     lastName: customer?.lastName ?? "",
@@ -32,17 +39,31 @@ export default function CustomerEditModal({
     city: customer?.address?.city ?? "",
     zip: customer?.address?.zip ?? "",
   });
+
   const [saving, setSaving] = useState(false);
 
-  const isEdit = customer !== null;
+  const shouldBlockBackdropClose = disableBackdropClose || !isEdit;
+
+  const handleBackdropMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (shouldBlockBackdropClose) return;
+
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
   const handleSave = async () => {
     if (!formData.firstName.trim() || !formData.lastName.trim()) return;
+
     setSaving(true);
+
     try {
       await onSave({
         firstName: formData.firstName.trim(),
@@ -64,11 +85,18 @@ export default function CustomerEditModal({
   };
 
   return (
-    <div className="edit-modal-backdrop" onClick={onClose}>
-      <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
+    <div className="edit-modal-backdrop" onMouseDown={handleBackdropMouseDown}>
+      <div className="edit-modal" onMouseDown={(e) => e.stopPropagation()}>
         <div className="edit-modal-head">
           <h2>{isEdit ? "Edit customer" : "Add customer"}</h2>
-          <button className="modal-close-btn" onClick={onClose}>
+
+          <button
+            className="modal-close-btn"
+            type="button"
+            onClick={onClose}
+            disabled={saving}
+            aria-label="Close customer modal"
+          >
             <X size={16} strokeWidth={2} />
           </button>
         </div>
@@ -80,6 +108,7 @@ export default function CustomerEditModal({
             value={formData.firstName}
             onChange={handleChange}
           />
+
           <input
             name="lastName"
             placeholder="Last name"
@@ -95,6 +124,7 @@ export default function CustomerEditModal({
           value={formData.email}
           onChange={handleChange}
         />
+
         <input
           name="phone"
           placeholder="Phone"
@@ -110,6 +140,7 @@ export default function CustomerEditModal({
             value={formData.loyaltyPoints}
             onChange={handleChange}
           />
+
           <input
             name="dietaryNotes"
             placeholder="Dietary notes"
@@ -124,6 +155,7 @@ export default function CustomerEditModal({
           value={formData.street}
           onChange={handleChange}
         />
+
         <div className="edit-modal-row">
           <input
             name="city"
@@ -131,6 +163,7 @@ export default function CustomerEditModal({
             value={formData.city}
             onChange={handleChange}
           />
+
           <input
             name="zip"
             placeholder="Zip"
@@ -140,11 +173,18 @@ export default function CustomerEditModal({
         </div>
 
         <div className="edit-modal-actions">
-          <button className="btn-secondary" onClick={onClose}>
+          <button
+            className="btn-secondary"
+            type="button"
+            onClick={onClose}
+            disabled={saving}
+          >
             Cancel
           </button>
+
           <button
             className="btn-primary"
+            type="button"
             disabled={
               saving || !formData.firstName.trim() || !formData.lastName.trim()
             }

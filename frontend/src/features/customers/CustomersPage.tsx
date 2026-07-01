@@ -475,6 +475,7 @@ export default function CustomersPage() {
           customer={null}
           onClose={() => setShowAddModal(false)}
           onSave={handleSaveNew}
+          disableBackdropClose
         />
       )}
 
